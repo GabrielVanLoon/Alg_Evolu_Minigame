@@ -13,14 +13,34 @@ void cross_best_vs_all(Population *pop){
     for(int i = 1; i < pop->size; i++){
         Individual* p2 = &(pop->ind[i]);
         Individual child = crossover(p1, p2);
-
-        p2->w.clear();
         p2->w = child.w;
     }
 
 }
 
-void cross_tournament_selection();
+void cross_tournament_selection(Population *pop){
+
+    // Realiza um sorteio dentre todos os membros para escolher
+    // ambos os pais de cada filho.
+    Individual *p1, *p2, *child;
+
+    child = (Individual*) malloc(pop->size * sizeof(Individual));
+
+    for(int c = 1; c < pop->size; c++){
+        p1 = &(pop->ind[rand()%pop->size]); 
+        p2 = &(pop->ind[rand()%pop->size]);
+        child[c] = crossover(p1,p2);
+    }
+
+    for(int i = 1; i < pop->size; i++){
+        for(int l = 0; l < child[i].w.size(); l++){
+            pop->ind[i].w[l] = child[i].w[l];
+        }  
+        child[i].w.clear();
+    }
+
+    free(child);
+}
 
 void cross_roulette();
 

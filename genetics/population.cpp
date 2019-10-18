@@ -4,6 +4,7 @@
 #include <time.h>
 #include "../classes/matrix.h"
 #include "population.h"
+#include "crossover.h"
 
 Population::Population(){
     this->size  = 50;
@@ -82,6 +83,7 @@ void Population::train(int epochLimit){
         // Calcula a performance da populacao como bestScore, avgScore, strScore
         this->bestScore = this->ind[0].score;
         this->avgScore  = totalScore/this->size;
+        printf("Score %d/%d: %lf\n", y, epochLimit, this->bestScore);
 
         // Houve melhora? Se sim atualiza o melhor individuo
         if(this->epoch == 0 || this->best.score < this->ind[0].score){
@@ -91,11 +93,16 @@ void Population::train(int epochLimit){
         // Não há melhora a muito tempo? Aumenta a taxa de mutacao
 
         // Realizando o Cross-Over da populacao
+        // cross_best_vs_all(this);
+        cross_tournament_selection(this);
 
         // Realizando as Mutacoes
 
         // Insira genocidios se houver
+
+
     }
+
 }
 
 void Population::kill(){

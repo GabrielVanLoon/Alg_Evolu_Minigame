@@ -27,7 +27,7 @@ run:
 	./exec
 
 verify:
-	valgrind ./exec
+	valgrind --leak-check=full --track-origins=yes ./exec 
 
 clean:
 	@echo "Removindo arquivos..."

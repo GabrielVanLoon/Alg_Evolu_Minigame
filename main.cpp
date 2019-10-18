@@ -16,14 +16,14 @@
 
 int main(){
 
-    Population pop = Population(2);
+    Population pop = Population(100);
     pop.start();
-    pop.train(1);
-    pop.print();
+    //pop.print();
+    pop.train(100);
     
-    Individual child = crossover(&pop.ind[0],&pop.ind[1]);
-    child.print();
-    
+    printf("\nFIM DO TREINO *******************\n");
+    //pop.print();
+
     pop.kill();
     
 }

@@ -40,7 +40,7 @@ int NeuralNetwork::getLoss(Matrix outExpected){
     for(int i = 0; i < outExpected.rows; i++){
         for(int j = 0; j < outExpected.cols; j++){
             // LOSS por enquanto será uma MSE (Mean Squared Error)
-            loss += (this->output.m[i][j]-outExpected.m[i][j])*(this->output.m[i][j] - outExpected.m[i][j]);
+            loss += (this->output.m[i][j]-outExpected.m[i][j])*(this->output.m[i][j]-outExpected.m[i][j]);
         }
     }
 

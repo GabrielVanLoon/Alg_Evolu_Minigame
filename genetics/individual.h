@@ -12,6 +12,7 @@
             int  score;
 
             ~Individual();
+
     };
 
     /**
@@ -22,8 +23,5 @@
     int create_gene(int range);
 
     Individual create_ind(int arch_size, int* configurations, int range);
-
-
-
 
 #endif
