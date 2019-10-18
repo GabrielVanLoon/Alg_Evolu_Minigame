@@ -6,7 +6,7 @@
 BUILD_DIR := ./build/
 NN_SRCS   := ./classes/matrix.cpp ./classes/neural-network.cpp
 NN_BINS   := $(NN_SRCS:%.c=%)
-AG_SRCS   := ./genetics/individual.cpp ./genetics/population.cpp
+AG_SRCS   := ./genetics/individual.cpp ./genetics/population.cpp ./genetics/crossover.cpp
 AG_BINS   := $(AG_SRCS:%.c=%)
 
 EITA := "olaaa"

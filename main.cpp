@@ -11,6 +11,7 @@
 #include "classes/matrix.h"
 #include "classes/neural-network.h"
 #include "genetics/population.h"
+#include "genetics/crossover.h"
 
 
 int main(){
