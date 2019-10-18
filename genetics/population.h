@@ -15,7 +15,7 @@
             int mutationMultiply;
 
             Individual best;
-            Individual *i;
+            Individual *ind;
 
             Population();
 

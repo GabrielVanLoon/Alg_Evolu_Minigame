@@ -36,13 +36,16 @@ Matrix::Matrix(int r, int c){
 
 Matrix::~Matrix(){
     for(int i = 0; i < this->rows; i++){
-        free(this->m[i]);
+        if(this->m[i] != NULL) free(this->m[i]);
+        this->m[i] = NULL;
     }
-    free(this->m);
+    if(this->m != NULL) free(this->m);
+    this->m = NULL;
 }
 
 Matrix& Matrix::operator=(const Matrix& other){
-    
+    this->~Matrix();
+
     this->rows = other.rows;
     this->cols = other.cols;
 
@@ -52,11 +55,6 @@ Matrix& Matrix::operator=(const Matrix& other){
         std::copy(other.m[i], other.m[i]+other.cols, this->m[i]);
     }
 
-}
-
-void Matrix::set(int i, int j, int value){
-    if(0 <= i && i <= this->rows && 0 <= j && j <= this->cols)
-        this->m[i][j] = value;
 }
 
 Matrix Matrix::operator*(const Matrix &obj){
@@ -73,6 +71,11 @@ Matrix Matrix::operator*(const Matrix &obj){
     }
 
     return C;
+}
+
+void Matrix::set(int i, int j, int value){
+    if(0 <= i && i <= this->rows && 0 <= j && j <= this->cols)
+        this->m[i][j] = value;
 }
 
 void Matrix::print(){

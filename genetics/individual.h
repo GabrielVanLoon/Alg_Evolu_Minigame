@@ -10,6 +10,8 @@
     class Individual : public NeuralNetwork {
         public:
             int  score;
+
+            ~Individual();
     };
 
     /**

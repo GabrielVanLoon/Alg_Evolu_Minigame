@@ -17,11 +17,13 @@
 int main(){
 
     Population pop = Population(2);
-
     pop.start();
-
     pop.train(1);
-
     pop.print();
+    
+    Individual child = crossover(&pop.ind[0],&pop.ind[1]);
+    child.print();
+    
+    pop.kill();
     
 }

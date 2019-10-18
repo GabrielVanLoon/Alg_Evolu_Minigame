@@ -26,6 +26,9 @@ all: ${NN_BINS} ${AG_BINS}
 run:
 	./exec
 
+verify:
+	valgrind ./exec
+
 clean:
 	@echo "Removindo arquivos..."
 	rm exec

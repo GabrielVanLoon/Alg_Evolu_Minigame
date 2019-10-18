@@ -4,6 +4,10 @@
 #include "individual.h"
 #include "individual.h"
 
+Individual::~Individual(){
+    this->w.clear();
+}
+
 bool compare_ind(Individual lhs, Individual rhs) { 
     return lhs.score < rhs.score; // Ordena decrescente
 }

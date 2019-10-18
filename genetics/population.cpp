@@ -11,7 +11,7 @@ Population::Population(){
     this->genesRange       = 100;
     this->mutationRate     = 1;
     this->mutationMultiply = 1;
-    this->i = NULL;
+    this->ind = NULL;
 }
 
 Population::Population(int populationSize){
@@ -20,17 +20,15 @@ Population::Population(int populationSize){
     this->genesRange       = 100;
     this->mutationRate     = 1;
     this->mutationMultiply = 1;
-    this->i = NULL;
+    this->ind = NULL;
 }
 
 Population::~Population(){
-    if(this->i != NULL){
-        this->kill();
-    }
+    this->kill();
 }
 
 void Population::start(){
-    if(this->i != NULL || this->size <= 0)
+    if(this->ind != NULL || this->size <= 0)
         return;
 
     srand(time(NULL));
@@ -39,9 +37,9 @@ void Population::start(){
     int arch_size = 2;
     int configs[3] = {2, 3, 1};
     
-    this->i = (Individual*) malloc(this->size*sizeof(Individual));
+    this->ind = (Individual*) malloc(this->size*sizeof(Individual));
     for(int i = 0; i < this->size; i++){
-        this->i[i] = create_ind(arch_size, configs, this->genesRange);
+        this->ind[i] = create_ind(arch_size, configs, this->genesRange);
     }
 }
 
@@ -72,22 +70,22 @@ void Population::train(int epochLimit){
 
         // Calculando os scores da população
         for(int p = 0; p < this->size; p++){
-            this->i[p].setInput(in);
-            this->i[p].run();
-            this->i[p].score = this->i[p].getLoss(out);
-            totalScore      += this->i[p].score;
+            this->ind[p].setInput(in);
+            this->ind[p].run();
+            this->ind[p].score = this->ind[p].getLoss(out);
+            totalScore      += this->ind[p].score;
         }
 
         // Ordenando a população do melhor para o pior
-        std::sort(this->i, this->i+this->size, compare_ind);
+        std::sort(this->ind, this->ind+this->size, compare_ind);
 
         // Calcula a performance da populacao como bestScore, avgScore, strScore
-        this->bestScore = this->i[0].score;
+        this->bestScore = this->ind[0].score;
         this->avgScore  = totalScore/this->size;
 
         // Houve melhora? Se sim atualiza o melhor individuo
-        if(this->epoch == 0 || this->best.score < this->i[0].score){
-            this->best = this->i[0];
+        if(this->epoch == 0 || this->best.score < this->ind[0].score){
+            this->best = this->ind[0];
         }
 
         // Não há melhora a muito tempo? Aumenta a taxa de mutacao
@@ -101,16 +99,20 @@ void Population::train(int epochLimit){
 }
 
 void Population::kill(){
-    if(this->i != NULL){
-        free(this->i);
-        this->i = NULL;
+    if(this->ind != NULL){ 
+        for(int i = 0; i < this->size; i++){
+            this->ind[i].~Individual();
+        }
+    
+        free(this->ind);
+        this->ind = NULL;
     }
 }
 
 void Population::print(){
      for(int i = 0; i < this->size; i++){
-        printf("Score: %d.\n", this->i[i].score);
-        this->i[i].print();
+        printf("Score: %d.\n", this->ind[i].score);
+        this->ind[i].print();
         std::cout << std::endl;
     }
 }

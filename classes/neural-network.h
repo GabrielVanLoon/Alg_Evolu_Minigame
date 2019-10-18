@@ -16,6 +16,8 @@
 
             NeuralNetwork();
 
+            ~NeuralNetwork();
+
             void pushLayer(Matrix hidden);
 
             void setInput(Matrix in);

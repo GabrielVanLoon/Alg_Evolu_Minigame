@@ -6,6 +6,12 @@
 
 NeuralNetwork::NeuralNetwork(){
     this->size = 0;
+    this->input = Matrix();
+    this->output = Matrix();
+}
+
+NeuralNetwork::~NeuralNetwork(){
+    // this->w.clear();
 }
 
 void NeuralNetwork::pushLayer(Matrix hidden){
