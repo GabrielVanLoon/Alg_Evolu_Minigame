@@ -37,7 +37,7 @@
              * void run(const Matrix *input);
              * Executa a rede neural dando como parâmetro os da camada de entrada.
              */
-            void run(const Matrix *input);
+            void run(const Matrix &input);
 
             /**
              * Matrix getOutput();
@@ -49,7 +49,7 @@
              * int getLoss(Matrix outExpected);
              * Calcula e retorna o MSE da saída produzida comparada com um output esperado.
              */
-            int get_loss(const Matrix *outExpected);
+            int get_loss(const Matrix &outExpected);
 
             /**
              * int size();

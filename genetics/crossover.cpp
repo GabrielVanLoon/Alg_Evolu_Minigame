@@ -6,40 +6,39 @@
 /**
  * Parent Selection Algorithms
  */
-void cross_best_vs_all(Population &pop){
+void cross_best_vs_all(Population *pop){
 
     // Realiza o crossover do melhor individio (index 0) com todos os restantes.
-    Individual p1 = pop.ind[0];
-    for(int i = 1; i < pop.size(); i++){
-        Individual p2    = pop.ind[i];
+    Individual p1 = pop->ind[0];
+    for(int i = 1; i < pop->size(); i++){
+        Individual p2    = pop->ind[i];
         Individual child = crossover(p1, p2);
-        pop.ind[i]       = child;
+        pop->ind[i]       = child;
     }
-
 }
 
-void cross_tournament_selection(Population &pop){
+void cross_tournament_selection(Population *pop){
 
     // Realiza um sorteio dentre todos os membros para escolher
     // ambos os pais de cada filho.
     Individual p1, p2;
     std::vector<Individual> children;
 
-    children.resize(pop.size());
-    children[0] = pop.ind[0];
+    children.resize(pop->size());
+    children[0] = pop->ind[0];
 
-    for(int c = 1; c < pop.size(); c++){
-        p1 = pop.ind[rand()%pop.size()]; 
-        p2 = pop.ind[rand()%pop.size()];
+    for(int c = 1; c < pop->size(); c++){
+        p1 = pop->ind[rand()%pop->size()]; 
+        p2 = pop->ind[rand()%pop->size()];
         children[c] = crossover(p1,p2);
     }
 
-    for(int i = 1; i < pop.size(); i++){ 
-        pop.ind[i] = children[i];
+    for(int i = 1; i < pop->size(); i++){ 
+        pop->ind[i] = children[i];
     }
 }
 
-void cross_roulette(Population &pop);
+void cross_roulette(Population *pop);
 
 /**
  * Crossover method
@@ -65,7 +64,6 @@ Individual crossover(const Individual &p1, const Individual &p2){
                 child.weights[layer].values[l][c] = (rand()%100 < 50) ? 
                       p1.weights[layer].values[l][c] 
                     : p2.weights[layer].values[l][c];
-
             }
         }
     }

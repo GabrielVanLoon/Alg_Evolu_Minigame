@@ -24,8 +24,8 @@ void NeuralNetwork::push_layer(const Matrix *layer){
     this->weights.push_back(Matrix(*layer));
 }
 
-void NeuralNetwork::run(const Matrix *input){
-    Matrix results = *input;
+void NeuralNetwork::run(const Matrix &input){
+    Matrix results = input;
     for(unsigned i = 0; i < this->weights.size(); i++){
         results = results * this->weights[i];
     }
@@ -36,20 +36,20 @@ Matrix NeuralNetwork::get_output(){
     return this->output;
 }
 
-int NeuralNetwork::get_loss(const Matrix *outExpected){
+int NeuralNetwork::get_loss(const Matrix &outExpected){
     
-    if(this->output.cols != outExpected->cols || this->output.rows != outExpected->rows)
+    if(this->output.cols != outExpected.cols || this->output.rows != outExpected.rows)
         return 99999999;
 
     int loss = 0;
-    for(int i = 0; i < outExpected->rows; i++){
-        for(int j = 0; j < outExpected->cols; j++){
+    for(int i = 0; i < outExpected.rows; i++){
+        for(int j = 0; j < outExpected.cols; j++){
             // LOSS por enquanto será uma MSE (Mean Squared Error)
-            loss += (this->output.values[i][j]-outExpected->values[i][j]) * (this->output.values[i][j]-outExpected->values[i][j]);
+            loss += (this->output.values[i][j]-outExpected.values[i][j]) * (this->output.values[i][j]-outExpected.values[i][j]);
         }
     }
 
-    return loss/(outExpected->cols*outExpected->rows);
+    return loss/(outExpected.cols*outExpected.rows);
 }
 
 int NeuralNetwork::size(){

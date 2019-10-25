@@ -11,10 +11,12 @@
 #include "crossover.h"
 
 Population::Population(){
+    this->epoch = 0;
     this->ind.resize(10);
 }
 
 Population::Population(int size){
+    this->epoch = 0;
     this->ind.resize(size);
 }
 
@@ -42,55 +44,78 @@ void Population::print(bool show_ind){
     }
 }
 
-void Population::train(int epochLimit){
+void Population::print_best_output(const Matrix &input){
+    if(this->epoch == 0){
+        printf("Error: essa população ainda não recebeu nenhum treinamento!");
+        return;
+    }
+    
+    if(input.cols != this->best_ind.weights[0].rows){
+        printf("Error: por favor, verifique se a matrix de input está configurada corretamente!\n");
+        return;
+    }
 
-    /** 1ª Etapa
-     *  - Definir qual é o valor de entrada
-     *  - Definir qual a saída esperada
+    printf("Output melhor indivíduo:\n");
+    this->best_ind.run(input);
+    Matrix out = this->best_ind.get_output();
+    out.print();
+}
+
+bool Population::train(int iterations, const Matrix &input, const Matrix &output){
+    /**
+     * Verificando se a matrix de input e output estão com as dimensões 
+     * corretas para serem executadas.
+     */ 
+    if(input.cols != this->ind[0].weights[0].rows){
+        printf("Train error: por favor, verifique se a matrix de input está configurada corretamente!\n");
+        return false;
+    }
+
+    if(output.cols != this->ind[0].weights[this->ind[0].weights.size()-1].cols){
+        printf("Train error: por favor, verifique se a matrix de output está configurada corretamente!\n");
+        return false;
+    }
+
+    /**
+     * Processos de cada iteração:
+     * 1º Calcular o score de cada indivíduo
+     * 2º Ordenar os individuos do melhor para o pior
+     * 3º Calcular performance geral e verificar se houve melhoria
+     * 4º Crossover
+     * 5º Mutações nos 
      */
-    Matrix in = Matrix(4,2);
-    in.set(0,0,200);
-    in.set(1,0,400);
-    in.set(2,0,600);
-    in.set(3,0,800);
-    for(int i=0; i < 4; i++)
-        in.set(i,1,1); // Biases
-
-    Matrix out = Matrix(4,1);
-    out.set(0,0,0);
-    out.set(1,0,0);
-    out.set(2,0,0);
-    out.set(3,0,0);
-
-    for(int y = 0; y < epochLimit; y++){
-        
+    for(int it = 0; it <= iterations; it++){
         int totalScore = 0;
-        this->epoch   += 1;
+        this->epoch   += 1; 
 
-        // Calculando os scores da população
+        // 1º Calcular o score de cada indivíduo
         for(int p = 0; p < this->size(); p++){
-            this->ind[p].run(&in);
-            this->ind[p].score = this->ind[p].get_loss(&out);
-            totalScore        += this->ind[p].score;
+            this->ind[p].run(input);
+            this->ind[p].score = -this->ind[p].get_loss(output);
+            totalScore        -=  this->ind[p].score;
         }
 
-        // Ordenando a população do melhor para o pior
+        // 2º Ordenar os individuos do melhor para o pior
         std::sort(this->ind.begin(), this->ind.end(), compare_individuals);
 
-        // Calcula a performance da populacao como bestScore, avgScore, strScore
-        this->avg_score   = totalScore/this->size();
-        printf("Geração %02d/%02d\t\tScore atual: %d\n", y, epochLimit, this->ind[0].score);
+        // 3º Calcular performance geral e verificar se houve melhoria
+        this->avg_score = totalScore/this->size();
+        printf("Geração %02d/%02d\tScore atual: %d\tScore Médio: %d\n", it, iterations, this->ind[0].score, this->avg_score);
 
-        // Houve melhora? Se sim atualiza o melhor individuo
-        if(this->epoch == 0 || this->best_ind.score < this->ind[0].score){
+        if(this->epoch <= 1 || this->best_ind.score < this->ind[0].score){
+            printf("Melhor individuo atualizado...\n");
             this->best_ind = this->ind[0];
         }
+
+        // Para o loop de iterações para garantir que o vector de individuos
+        // seja retornado com os scores calculados e ordenado corretamente.
+        if(it == iterations) break;
 
         // Não há melhora a muito tempo? Aumenta a taxa de mutacao
 
         // Realizando o Cross-Over da populacao
         // cross_best_vs_all(this);
-        // cross_tournament_selection(this);
+        cross_tournament_selection(this);
 
         // Realizando as Mutacoes
 

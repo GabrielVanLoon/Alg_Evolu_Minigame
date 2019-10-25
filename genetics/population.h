@@ -65,11 +65,25 @@
              */
             void print(bool show_ind);
 
+
+            /**
+             * void print_best_output(const Matrix &input);
+             * Executa o input recebido no melhor individuo da população
+             * e exibe quais foram os valores de saída.
+             */
+            void print_best_output(const Matrix &input);
+
+
             /**
              * void train(int epochLimit);
-             * @ TODO
+             * Realiza o treinamento da população aumentando a sua idade em um dado número
+             * de iterações.
+             * @param iterations - Quantidade de épocas que que o treinamento iria rodar.
+             * @param input - Matrix dos inputs que serão utilizados para o treinamento.
+             * @param output - Matrix de outputs esperados para os inputs dados.
+             * @return true em caso de sucesso ou false caso ocorra algum erro.
              */
-            void train(int epochLimit);
+            bool train(int iterations, const Matrix &input, const Matrix &output);
 
     };
 
