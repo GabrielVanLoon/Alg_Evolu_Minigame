@@ -30,6 +30,10 @@ Individual::Individual(const std::vector<int> &configurations, int range){
 
 
 bool compare_individuals(Individual lhs, Individual rhs) { 
+    return lhs.score > rhs.score; // Ordena decrescente
+}
+
+bool compare_individuals_desc(Individual lhs, Individual rhs) { 
     return lhs.score < rhs.score; // Ordena decrescente
 }
 

@@ -23,6 +23,10 @@
          */ 
         void cross_tournament_selection(Population *pop);
 
+        /**
+         * void cross_roulette(Population *pop);
+         * @ TODO
+         */
         void cross_roulette(Population *pop);
 
     /**

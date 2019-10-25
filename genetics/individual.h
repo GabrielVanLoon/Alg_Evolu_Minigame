@@ -9,7 +9,7 @@
      */
     class Individual : public NeuralNetwork {
         public:
-            int  score;
+            unsigned int score;
             
             Individual();
             
@@ -29,10 +29,17 @@
 
     /**
      * bool compare_individuals(Individual lhs, Individual rhs);
+     * Ordenar dois indivíduos em ordem crescente baseado em seus scores.
+     * Retorna true se (lhs.score > rhs.score)
+     */
+    bool compare_individuals(Individual lhs, Individual rhs);
+
+    /**
+     * bool compare_individuals(Individual lhs, Individual rhs);
      * Ordenar dois indivíduos em ordem decrescente baseado em seus scores.
      * Retorna true se (lhs.score < rhs.score)
      */
-    bool compare_individuals(Individual lhs, Individual rhs);
+    bool compare_individuals_desc(Individual lhs, Individual rhs);
 
     /**
      * int random_gene(int range);

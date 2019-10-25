@@ -50,8 +50,11 @@
              * Inicia os individuos da população com valores aleatórios.
              * É necessário que os parâmetros de configuração já tenham sido
              * atribuidos corretamente.
+             * Caso nenhuma configuração seja selecionada ele cria uma estrutura
+             * padrão com apenas um único neurônio.
              */
             void start();
+            void start(const std::vector<int> &configurations);
 
             /**
              * int size();

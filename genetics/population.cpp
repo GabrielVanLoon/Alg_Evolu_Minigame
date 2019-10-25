@@ -9,6 +9,7 @@
 #include "population.h"
 #include "individual.h"
 #include "crossover.h"
+#include "mutation.h"
 
 Population::Population(){
     this->epoch = 0;
@@ -20,16 +21,21 @@ Population::Population(int size){
     this->ind.resize(size);
 }
 
-void Population::start(){
+void Population::start(const std::vector<int> &configurations){
     if(this->size() < 1) return;
         
     srand(time(NULL));
-
-    // Definindo qual será a arquitetura utilizada nas redes.
-    std::vector<int> configurations({2, 3, 1});
-    
     for(int i = 0; i < this->size(); i++)
         this->ind[i] = Individual(configurations, this->genes_range);
+}
+
+void Population::start(){
+    if(this->size() < 1) return;
+        
+    // Arquitetura padrão trivial para caso nenhuma tenha sido selecionada
+    std::vector<int> configurations({2, 1});
+    for(int i = 0; i < this->size(); i++)
+        this->start(configurations);
 }
 
 int Population::size(){
@@ -91,18 +97,18 @@ bool Population::train(int iterations, const Matrix &input, const Matrix &output
         // 1º Calcular o score de cada indivíduo
         for(int p = 0; p < this->size(); p++){
             this->ind[p].run(input);
-            this->ind[p].score = -this->ind[p].get_loss(output);
-            totalScore        -=  this->ind[p].score;
+            this->ind[p].score = this->ind[p].get_loss(output);
+            totalScore        += this->ind[p].score;
         }
 
         // 2º Ordenar os individuos do melhor para o pior
-        std::sort(this->ind.begin(), this->ind.end(), compare_individuals);
+        std::sort(this->ind.begin(), this->ind.end(), compare_individuals_desc);
 
         // 3º Calcular performance geral e verificar se houve melhoria
         this->avg_score = totalScore/this->size();
         printf("Geração %02d/%02d\tScore atual: %d\tScore Médio: %d\n", it, iterations, this->ind[0].score, this->avg_score);
 
-        if(this->epoch <= 1 || this->best_ind.score < this->ind[0].score){
+        if(this->epoch <= 1 || this->best_ind.score > this->ind[0].score){
             printf("Melhor individuo atualizado...\n");
             this->best_ind = this->ind[0];
         }
@@ -118,6 +124,7 @@ bool Population::train(int iterations, const Matrix &input, const Matrix &output
         cross_tournament_selection(this);
 
         // Realizando as Mutacoes
+        mutate_all(this);
 
         // Insira genocidios se houver
     }
