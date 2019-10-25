@@ -13,7 +13,7 @@ EITA := "olaaa"
 
 all: ${NN_BINS} ${AG_BINS}
 	@echo "Relizando build..."
-	g++ -o exec main.cpp
+	g++ -o exec ${NN_BINS} ${AG_BINS} main.cpp
  
 %: %.o
 	@echo "Gerando binarios..."

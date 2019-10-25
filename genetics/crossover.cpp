@@ -6,67 +6,65 @@
 /**
  * Parent Selection Algorithms
  */
-void cross_best_vs_all(Population *pop){
+void cross_best_vs_all(Population &pop){
 
     // Realiza o crossover do melhor individio (index 0) com todos os restantes.
-    Individual* p1 = &(pop->ind[0]);
-    for(int i = 1; i < pop->size; i++){
-        Individual* p2 = &(pop->ind[i]);
+    Individual p1 = pop.ind[0];
+    for(int i = 1; i < pop.size(); i++){
+        Individual p2    = pop.ind[i];
         Individual child = crossover(p1, p2);
-        p2->w = child.w;
+        pop.ind[i]       = child;
     }
 
 }
 
-void cross_tournament_selection(Population *pop){
+void cross_tournament_selection(Population &pop){
 
     // Realiza um sorteio dentre todos os membros para escolher
     // ambos os pais de cada filho.
-    Individual *p1, *p2, *child;
+    Individual p1, p2;
+    std::vector<Individual> children;
 
-    child = (Individual*) malloc(pop->size * sizeof(Individual));
+    children.resize(pop.size());
+    children[0] = pop.ind[0];
 
-    for(int c = 1; c < pop->size; c++){
-        p1 = &(pop->ind[rand()%pop->size]); 
-        p2 = &(pop->ind[rand()%pop->size]);
-        child[c] = crossover(p1,p2);
+    for(int c = 1; c < pop.size(); c++){
+        p1 = pop.ind[rand()%pop.size()]; 
+        p2 = pop.ind[rand()%pop.size()];
+        children[c] = crossover(p1,p2);
     }
 
-    for(int i = 1; i < pop->size; i++){
-        for(int l = 0; l < child[i].w.size(); l++){
-            pop->ind[i].w[l] = child[i].w[l];
-        }  
-        child[i].w.clear();
+    for(int i = 1; i < pop.size(); i++){ 
+        pop.ind[i] = children[i];
     }
-
-    free(child);
 }
 
-void cross_roulette();
+void cross_roulette(Population &pop);
 
 /**
  * Crossover method
  */
-Individual crossover(Individual *p1, Individual *p2){
+Individual crossover(const Individual &p1, const Individual &p2){
 
     // 1ª Etapa - Gerando um filho com as mesmas configurações
     //            que os pais.
-    int configurations[p1->size+1];
-    configurations[0] = p1->w[0].rows;
-    for(int c = 1; c <= p1->size; c++){
-        configurations[c] = p1->w[c-1].cols;
+    std::vector<int> configurations;
+    configurations.push_back(p1.weights[0].rows);
+
+    for(int c = 1; c <= p1.weights.size(); c++){
+        configurations.push_back(p1.weights[c-1].cols);
     }
 
-    Individual child = create_ind(p1->size, configurations, 2);
+    Individual child = Individual(configurations, 2);
 
     // 2ª Etapa - Percorre cada peso de cada camada e decide se irá herdar
     //            do parent p1 ou p2
-    for(int layer = 0; layer < p1->size; layer++){
-        for(int l = 0; l < p1->w[layer].rows; l++){
-            for(int c = 0; c < p1->w[layer].cols; c++){
-                child.w[layer].m[l][c] = (rand()%100 < 50) ? 
-                      p1->w[layer].m[l][c] 
-                    : p2->w[layer].m[l][c];
+    for(int layer = 0; layer < p1.weights.size(); layer++){
+        for(int l = 0; l < p1.weights[layer].rows; l++){
+            for(int c = 0; c < p1.weights[layer].cols; c++){
+                child.weights[layer].values[l][c] = (rand()%100 < 50) ? 
+                      p1.weights[layer].values[l][c] 
+                    : p2.weights[layer].values[l][c];
 
             }
         }

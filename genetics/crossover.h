@@ -8,16 +8,16 @@
     /**
      * Parent Selection Algorithms
      */
-    void cross_best_vs_all(Population*);
+    void cross_best_vs_all(Population &pop);
 
-    void cross_tournament_selection(Population*);
+    void cross_tournament_selection(Population &pop);
 
-    void cross_roulette(Population*);
+    void cross_roulette(Population &pop);
 
     /**
      * Crossover method
      */
-    Individual crossover(Individual *p1, Individual *p2);
+    Individual crossover(const Individual &p1, const Individual &p2);
 
 
 #endif

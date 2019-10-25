@@ -4,24 +4,12 @@
 #include "individual.h"
 #include "individual.h"
 
-Individual::~Individual(){
-    this->w.clear();
-}
-
-bool compare_ind(Individual lhs, Individual rhs) { 
-    return lhs.score < rhs.score; // Ordena decrescente
-}
-
-int create_gene(int range){
-    return (rand()%(2*range))-range;
-}
-
-
-Individual create_ind(int arch_size, int* configurations, int range){
+Individual::Individual(){
     
-    Individual ind = Individual();
+}
 
-    for(int i = 1; i <= arch_size; i++){
+Individual::Individual(const std::vector<int> &configurations, int range){  
+    for(int i = 1; i < configurations.size(); i++){
         // Gerando a hidden layer da rede neural.
         // [i==0] >> Neurons na camada de entrada
         // [i-0]  >> Neurons na camada anterior   i = 1 .. arch_size
@@ -31,13 +19,20 @@ Individual create_ind(int arch_size, int* configurations, int range){
         // Gerando os valores dentro do range
         for(int l = 0; l < configurations[i-1]; l++){
             for(int c = 0; c < configurations[i]; c++){
-                m.set(l,c, create_gene(range));
+                m.set(l,c, random_gene(range));
             }
         }
 
         // Insere a hidden layer e segue a vida
-        ind.pushLayer(m);
+        this->push_layer(&m);
     }
+}
 
-    return ind;
+
+bool compare_individuals(Individual lhs, Individual rhs) { 
+    return lhs.score < rhs.score; // Ordena decrescente
+}
+
+int random_gene(int range){
+    return (rand()%(2*range))-range;
 }
