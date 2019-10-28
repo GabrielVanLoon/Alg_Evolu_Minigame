@@ -92,7 +92,7 @@ bool Population::train(int iterations, const Matrix &input, const Matrix &output
      */
     for(int it = 0; it <= iterations; it++){
         int totalScore = 0;
-        this->epoch   += 1; 
+        this->epoch   += 1;
 
         // 1º Calcular o score de cada indivíduo
         for(int p = 0; p < this->size(); p++){

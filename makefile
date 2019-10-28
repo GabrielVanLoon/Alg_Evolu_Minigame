@@ -8,12 +8,14 @@ NN_SRCS   := ./network/matrix.cpp ./network/neural-network.cpp
 NN_BINS   := $(NN_SRCS:%.c=%)
 AG_SRCS   := ./genetics/individual.cpp ./genetics/population.cpp ./genetics/crossover.cpp ./genetics/mutation.cpp
 AG_BINS   := $(AG_SRCS:%.c=%)
+GM_SRCS   := ./components/enemy.cpp ./components/projectile.cpp ./components/cannon.cpp
+GM_BINS   := $(GM_SRCS:%.c=%)
 
 EITA := "olaaa"
 
-all: ${NN_BINS} ${AG_BINS}
+all: ${NN_BINS} ${AG_BINS} ${GM_BINS}
 	@echo "Relizando build..."
-	g++ -o exec ${NN_BINS} ${AG_BINS} main.cpp
+	g++ -o exec ${GM_BINS} main.cpp -w -lSDL2 -lSDL2_image
  
 %: %.o
 	@echo "Gerando binarios..."

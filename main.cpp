@@ -4,47 +4,104 @@
  * Algoritmos Genéticos + RN - Shooter Minigame
  * 
  */
-
-#include <iostream>
+#include <SDL2/SDL.h>
 #include <stdlib.h>
-#include "network/matrix.h"
-#include "network/neural-network.h"
-#include "genetics/population.h"
+#include <time.h>
+#include <iostream>
+#include "components/enemy.h"
+#include "components/cannon.h"
 
+/**
+ * CONFIGURAÇÕES GERAIS DO PROGRAMA
+ */ 
+    const int SCREEN_WIDTH  = 1200;
+    const int SCREEN_HEIGHT = 680;
+
+
+/**
+ * VARIÁVEIS GLOBAIS 
+ */
+    SDL_Window*   gWindow   = NULL;
+    SDL_Renderer* gRenderer = NULL;
+    SDL_Event     gEvent;
 
 int main(){
 
-    /** 1ª Etapa
-     *  - Definir qual é o valor de entrada
-     *  - Definir qual a saída esperada
-     */
-    Matrix in = Matrix(4,2);
-    in.set(0,0,2);
-    in.set(1,0,5);
-    in.set(2,0,10);
-    in.set(3,0,12);
-    for(int i=0; i < 4; i++)
-        in.set(i,1,1); // Biases
+    srand(time(NULL));
 
-    Matrix out = Matrix(4,1);
-    out.set(0,0,2*10);
-    out.set(1,0,5*10);
-    out.set(2,0,10*10);
-    out.set(3,0,12*10);
+    // Verificando se a SDL 2.0 foi carregada com sucesso
+    if(SDL_Init( SDL_INIT_VIDEO ) < 0){
+        printf("Error: a biblioteca SDL falhou ao iniciar.\n");
+        return 1;
+    } 
+
+    // Gerando a janela que irá carregar o jogo
+    gWindow = SDL_CreateWindow("Super Shooter AG", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+                                    SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if(gWindow == NULL){
+        printf("Error: ocorreu um erro ao executar a função SDL_CreateWindow().\n");
+        return 1;
+    }
+
+    // Gerando o renderizador que irá realizar o desenho dos frames
+    gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+    if(gRenderer == NULL){
+        printf("Error: ocorreu um erro ao executar a função SDL_CreateRenderer().\n");
+        return 1;
+    }
+
+    // Declarando as variáveis necessárias
+    Cannon cannon = Cannon(20, SCREEN_HEIGHT-50, 50, 30);
+    Projectile proj = cannon.shot_projectile(20, 30, 5);
+    Enemy enemy = Enemy(SCREEN_WIDTH-100, SCREEN_HEIGHT-80, 40, 60);
+
+    int framesCounter = 0;
 
 
-    Population pop  = Population(100);
-    pop.genes_range = 5;
-    pop.mutation_rate = 30;
-    pop.mutation_range = 10;
-    pop.mutation_multiply = 1;
+    // Loop principal do programa
+    bool quitFlag = false;
+    while(!quitFlag){
 
-    pop.start();
-    pop.train(10, in, out);
-    printf("\n\nRede final...\n");
-    //pop.print(true);
-    pop.best_ind.print();
-    pop.print_best_output(in);
+        // 1ª Etapa - Lendo os eventos disparados
+        while( SDL_PollEvent( &gEvent ) != 0 ){
+            //User requests quit
+            if( gEvent.type == SDL_QUIT ){
+                quitFlag = true;
+            }
+        }
+
+        // 2ª Etapa - Limpando a tela para o próximo frame
+        SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+		SDL_RenderClear( gRenderer ); 
+
+        // 3º Etapa - Realizando as mudanças no frame
+        if(framesCounter % 16){
+            proj.update_position();
+            proj.update_velocity(0,-1);
+        }
+
+        proj.render( gRenderer );
+        cannon.render( gRenderer );
+        enemy.render( gRenderer );
+
+        // 4ª Etapa - Redesenhando o frame o próximo frame
+        SDL_RenderPresent( gRenderer );
+
+        if(proj.pos_x > SCREEN_WIDTH || proj.pos_y > SCREEN_HEIGHT)
+            proj = cannon.shot_projectile(rand()%50,rand()%50,0);
+
+        framesCounter++;
+    }
+
+    // Desalocando as variáveis e destruindo as estruturas
+    SDL_DestroyRenderer( gRenderer );
+	SDL_DestroyWindow( gWindow );
+	gWindow = NULL;
+	gRenderer = NULL;
+
+    SDL_Quit();
+
+    return 0;
 
 }
 
