@@ -14,6 +14,13 @@ Cannon::Cannon(int pos_x, int pos_y, int width, int height){
     this->r = this->g = this->b = this->a = 0x00;
 }
 
+void Cannon::set_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a){
+    this->r = r;
+    this->g = g;
+    this->b = b;
+    this->a = a;
+}
+
 int Cannon::get_enemy_distance(){
     return 0;
 }

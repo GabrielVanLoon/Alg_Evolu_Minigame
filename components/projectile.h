@@ -21,6 +21,8 @@
 
             Projectile(int pos_x, int pos_y, int radius, int vel_x, int vel_y);
 
+            void set_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+
             void update_position();
 
             void update_velocity(int acel_x, int acel_y);

@@ -25,6 +25,8 @@
 
             Cannon(int pos_x, int pos_y, int width, int height);
 
+            void set_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+
             // Calcula a distancia horizontal do inimigo baseado
             // na posição atual do canhão e atira.
             int get_enemy_distance();

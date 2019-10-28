@@ -30,6 +30,13 @@ Enemy::Enemy(int pos_x, int pos_y, int width, int height, int vel_x){
     this->r = 0xFF;
 }
 
+void Enemy::set_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a){
+    this->r = r;
+    this->g = g;
+    this->b = b;
+    this->a = a;
+}
+
 // Verifica se houve colisão de um objeto com outro.
 bool Enemy::check_colission(){
     return false;

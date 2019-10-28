@@ -28,6 +28,8 @@
 
             Enemy(int pos_x, int pos_y, int width, int height, int vel_x);
 
+            void set_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+
             // Verifica se houve colisão de um objeto com outro.
             bool check_colission();
 

@@ -8,8 +8,10 @@
 #include <stdlib.h>
 #include <time.h>
 #include <iostream>
+#include <vector>
 #include "components/enemy.h"
 #include "components/cannon.h"
+#include "components/instance.h"
 
 /**
  * CONFIGURAÇÕES GERAIS DO PROGRAMA
@@ -51,9 +53,11 @@ int main(){
     }
 
     // Declarando as variáveis necessárias
-    Cannon cannon = Cannon(20, SCREEN_HEIGHT-50, 50, 30);
-    Projectile proj = cannon.shot_projectile(20, 30, 5);
-    Enemy enemy = Enemy(SCREEN_WIDTH-100, SCREEN_HEIGHT-80, 40, 60);
+    std::vector<Instance> vInstances;
+    for(int i = 0; i < 100; i++){
+        vInstances.push_back(Instance(SCREEN_WIDTH, SCREEN_HEIGHT, i, INSTANCE_EASY, 50));
+        vInstances[i].start();
+    }
 
     int framesCounter = 0;
 
@@ -75,22 +79,15 @@ int main(){
 		SDL_RenderClear( gRenderer ); 
 
         // 3º Etapa - Realizando as mudanças no frame
-        if(framesCounter % 16){
-            proj.update_position();
-            proj.update_velocity(0,-1);
-        }
-
-        proj.render( gRenderer );
-        cannon.render( gRenderer );
-        enemy.render( gRenderer );
+        for(int i = 0; i < vInstances.size(); i++)
+            vInstances[i].render( gRenderer, (framesCounter%4==0));
+  
 
         // 4ª Etapa - Redesenhando o frame o próximo frame
         SDL_RenderPresent( gRenderer );
 
-        if(proj.pos_x > SCREEN_WIDTH || proj.pos_y > SCREEN_HEIGHT)
-            proj = cannon.shot_projectile(rand()%50,rand()%50,0);
-
         framesCounter++;
+        // SDL_Delay(10);
     }
 
     // Desalocando as variáveis e destruindo as estruturas
