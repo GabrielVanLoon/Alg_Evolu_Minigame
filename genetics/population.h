@@ -88,6 +88,14 @@
              */
             bool train(int iterations, const Matrix &input, const Matrix &output);
 
+            /**
+             * bool itrain();
+             * Realiza o treinamento iterativo da população. O usuário define os scores
+             * dos individuos e essa função executa apenas a etapa de sort, crossover, mutação
+             * etc...
+             * @return true em caso de sucesso ou false caso ocorra algum erro.
+             */
+            bool itrain();
     };
 
 #endif

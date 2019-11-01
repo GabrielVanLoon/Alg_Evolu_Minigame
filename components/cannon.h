@@ -3,6 +3,7 @@
 
     #include <SDL2/SDL.h>
     #include "projectile.h"
+    #include "enemy.h"
 
     /**
      * @class Cannon
@@ -29,7 +30,7 @@
 
             // Calcula a distancia horizontal do inimigo baseado
             // na posição atual do canhão e atira.
-            int get_enemy_distance();
+            int get_enemy_distance(const Enemy &e);
 
             // Atira um projétil
             Projectile shot_projectile(int vel_x, int vel_y, int degrees);

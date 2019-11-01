@@ -15,7 +15,7 @@ EITA := "olaaa"
 
 all: ${NN_BINS} ${AG_BINS} ${GM_BINS}
 	@echo "Relizando build..."
-	g++ -o exec ${GM_BINS} main.cpp -w -lSDL2 -lSDL2_image
+	g++ -o exec ${NN_BINS} ${AG_BINS} ${GM_BINS} main.cpp -w -lSDL2 -lSDL2_image
  
 %: %.o
 	@echo "Gerando binarios..."

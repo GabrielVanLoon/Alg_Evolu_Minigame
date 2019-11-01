@@ -21,8 +21,8 @@ void Cannon::set_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a){
     this->a = a;
 }
 
-int Cannon::get_enemy_distance(){
-    return 0;
+int Cannon::get_enemy_distance(const Enemy &e){
+    return e.pos_x - this->pos_x;
 }
 
 Projectile Cannon::shot_projectile(int vel_x, int vel_y, int degrees){

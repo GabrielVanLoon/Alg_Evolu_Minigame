@@ -41,6 +41,9 @@ Matrix Matrix::operator*(const Matrix &obj){
             for(int d = 0; d < this->cols; d++){
                 C.values[r][j] += this->values[r][d] * obj.values[d][j];
             }
+
+            // RELU
+            C.values[r][j] = std::max(0, C.values[r][j]);
         }
     }
 

@@ -131,4 +131,28 @@ bool Population::train(int iterations, const Matrix &input, const Matrix &output
 
 }
 
+bool Population::itrain(){
+    this->epoch   += 1;
 
+    // 1º Calcular o score de cada indivíduo
+    // No treino iterativo os Scores são definidos antes da chamada dessa função
+    // isso permite que o cálculo dos scores seja dinâmico e de responsabilidade do usuário.
+
+    // 2º Ordenar os individuos do melhor para o pior
+    std::sort(this->ind.begin(), this->ind.end(), compare_individuals_desc);
+
+    // 3º Calcular performance geral e verificar se houve melhoria
+    printf("Geração %02d\tScore atual: %d\tMelhor Score: %d\n", this->epoch, this->ind[0].score, this->best_ind.score);
+    if(this->epoch <= 1 || this->best_ind.score > this->ind[0].score){
+        printf("Melhor individuo atualizado...\n");
+        this->best_ind = this->ind[0];
+    }
+
+    // 4º Realizando os Crossovers
+    cross_tournament_selection(this);
+
+    // 5º Realizando as Mutações
+    mutate_all(this);
+
+    return true;
+}
