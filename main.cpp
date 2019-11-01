@@ -17,7 +17,7 @@
 /**
  * Configurações do jogo
  */
-    const int TAMANHO_POPULACAO = 20;
+    const int TAMANHO_POPULACAO = 100;
 
 
 /**
@@ -40,7 +40,6 @@ int main(){
      * Pré-condigurações
      */
         srand(time(NULL));
-
         // Verificando se a SDL 2.0 foi carregada com sucesso
         if(SDL_Init( SDL_INIT_VIDEO ) < 0){
             printf("Error: a biblioteca SDL falhou ao iniciar.\n");
@@ -69,10 +68,11 @@ int main(){
     // Declarando as variáveis necessárias
     std::vector<int> configurations{2,1};
     Population pop = Population(TAMANHO_POPULACAO);
-    pop.genes_range = 3;
-    pop.mutation_rate = 30;
-    pop.mutation_range = 10;
+    pop.genes_range       = 1;
+    pop.mutation_rate     = 50;
+    pop.mutation_range    = 1;
     pop.mutation_multiply = 1;
+    pop.genes_precision   = 10000000; 
     pop.start();
 
     std::vector<Instance> vInstances;
@@ -82,10 +82,12 @@ int main(){
         vInstances[i].start();
     }
 
+    // Variáveis do loop
     int framesCounter = 0;
-
-    // Loop principal do programa
     bool quitFlag = false;
+    bool onlyBestFlag = false;
+    bool changeRequestedFlag = false;
+
     while(!quitFlag){
 
         // 1ª Etapa - Lendo os eventos disparados
@@ -93,6 +95,11 @@ int main(){
             //User requests quit
             if( gEvent.type == SDL_QUIT ){
                 quitFlag = true;
+            } 
+            // User Key Press
+            if (gEvent.type == SDL_KEYDOWN){
+                if(gEvent.key.keysym.sym == SDLK_b) 
+                    changeRequestedFlag = true;   
             }
         }
 
@@ -102,18 +109,39 @@ int main(){
 
         // 3º Etapa - Realizando as mudanças no frame
         bool allRoundsFinished = true;
-        for(int i = 0; i < vInstances.size(); i++){
-            vInstances[i].render( gRenderer, (framesCounter%2==0), false);
+        
+        if(onlyBestFlag){
+            vInstances[0].render(gRenderer, (framesCounter%2==0), false);
+            allRoundsFinished = (vInstances[0].round_counter > vInstances[0].rounds_max);
+        
+            if(allRoundsFinished)
+                vInstances[0].start();
             
-            if(vInstances[i].status != INSTANCE_FINISHED){
-                allRoundsFinished = false;
+            if(allRoundsFinished && changeRequestedFlag){
+                changeRequestedFlag = false;
+                onlyBestFlag        = false;
             }
         }
 
-        if(allRoundsFinished){
-            pop.itrain();
-            for(int i = 0; i < TAMANHO_POPULACAO; i++)
-                vInstances[i].start();
+
+        if(!onlyBestFlag){
+            for(int i = 0; i < vInstances.size(); i++){
+                vInstances[i].render( gRenderer, (framesCounter%2==0), false);
+                if(vInstances[i].status != INSTANCE_FINISHED){
+                    allRoundsFinished = false;
+                }
+            }
+
+            if(allRoundsFinished){
+                pop.itrain();
+                for(int i = 0; i < TAMANHO_POPULACAO; i++)
+                    vInstances[i].start();
+            }
+
+            if(allRoundsFinished && changeRequestedFlag){
+                changeRequestedFlag = false;
+                onlyBestFlag = true;
+            }
         }
 
         // 4ª Etapa - Redesenhando o frame o próximo frame
@@ -122,6 +150,8 @@ int main(){
         framesCounter++;
         // SDL_Delay(10);
     }
+
+
 
     // Desalocando as variáveis e destruindo as estruturas
     SDL_DestroyRenderer( gRenderer );

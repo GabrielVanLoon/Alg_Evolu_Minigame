@@ -26,7 +26,7 @@ void Population::start(const std::vector<int> &configurations){
         
     srand(time(NULL));
     for(int i = 0; i < this->size(); i++)
-        this->ind[i] = Individual(configurations, this->genes_range);
+        this->ind[i] = Individual(configurations, this->genes_range, this->genes_precision);
 }
 
 void Population::start(){

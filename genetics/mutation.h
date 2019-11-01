@@ -30,7 +30,7 @@
          * Percorre toos os pesos de todas as camadas e possui uma chance de aleatóriamente
          * modificar o valor no intervalo [-range*multiply,+-range*multiply].
          */
-        void mut_all_layers(Individual &ind, int rate, int range, int multiply);
+        void mut_all_layers(Individual &ind, int rate, int range, int multiply, int precision);
 
         /**
          * void mut_one_layer(Individual &ind, int rate, int range, int multiply);
@@ -38,6 +38,6 @@
          * Para cada peso, possui uma chance aleatória de modificar o valor
          * no intervalo [-range*multiply,+-range*multiply].
          */
-        void mut_one_layer(Individual &ind, int rate, int range, int multiply);
+        void mut_one_layer(Individual &ind, int rate, int range, int multiply, int precision);
 
 #endif

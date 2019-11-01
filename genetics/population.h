@@ -22,15 +22,18 @@
             
             /**
              * Parâmetros de Configuração
-             * @param genes_range - Range em que os pesos da rede serão iniciados
-             * @param mutation_rate - Chance porcentual de mutação de cada indivíduo
-             * @param mutation_range
-             * @param mutation_multiply
+             * @param genes_range    - Range em que os pesos da rede serão iniciados
+             * @param mutation_rate  - Chance porcentual de mutação de cada indivíduo
+             * @param mutation_range - Valor que um dado gene pode sofrer de mutação
+             * @param mutation_multiply - Constante que afeta o valor do mutation_range
+             * @param genes_precision - Qual a precisão que será utilizada. Utilizar potencias de 10... 
+             *                          (eg: genes_precision = 1000 =>  precisão de 0.001)
              */
             int genes_range;
             int mutation_rate;
             int mutation_range;
             int mutation_multiply;
+            int genes_precision;
 
             /**
              * Population();

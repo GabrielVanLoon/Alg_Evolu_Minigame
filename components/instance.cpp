@@ -97,12 +97,16 @@ void Instance::render(SDL_Renderer* renderer, bool update, bool atualizarIndivid
             this->projectile.update_velocity(acel_x, acel_y);
         }
 
-        // Se o projétil atinge o chão passa para ou pausa a instância
-        if(this->status == INSTANCE_RUNNING && this->projectile.pos_y >= this->screen_height){
+        // Se o projétil atinge o chão ou foge muito da largura passa para ou pausa a instância
+        if(this->status == INSTANCE_RUNNING && (this->projectile.pos_y >= this->screen_height 
+             || this->projectile.pos_x > 2*this->screen_width)){
             
             // Incrementa o contador de rodadas e calcula a loss
             this->round_counter += 1;
-            this->pop->ind[this->id].score += abs(this->projectile.pos_x - this->enemy.pos_x);
+            if(this->projectile.pos_y >= this->screen_height)
+                this->pop->ind[this->id].score += abs(this->projectile.pos_x - this->enemy.pos_x);
+            else 
+                this->pop->ind[this->id].score += 2*this->screen_width;
 
             if(this->round_counter > this->rounds_max){
                 this->status = INSTANCE_FINISHED;

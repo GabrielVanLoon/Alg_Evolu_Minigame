@@ -9,7 +9,7 @@
     class Matrix {
         public:
             int   rows, cols;
-            std::vector<std::vector<int>> values;
+            std::vector<std::vector<double>> values;
 
             /**
              * Matrix();
@@ -39,7 +39,7 @@
              * void set(int i, int j, int value);
              * Define, de maneira segura, um valor na posição Aij da Matriz.
              */
-            void set(int i, int j, int value);
+            void set(int i, int j, double value);
 
             /**
              * void print();

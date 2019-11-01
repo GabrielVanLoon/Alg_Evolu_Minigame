@@ -5,7 +5,6 @@
 #include "individual.h"
 
 Individual::Individual(){
-    
 }
 
 Individual::Individual(const std::vector<int> &configurations, int range){  
@@ -28,6 +27,25 @@ Individual::Individual(const std::vector<int> &configurations, int range){
     }
 }
 
+Individual::Individual(const std::vector<int> &configurations, int range, int precision){  
+    for(int i = 1; i < configurations.size(); i++){
+        // Gerando a hidden layer da rede neural.
+        // [i==0] >> Neurons na camada de entrada
+        // [i-0]  >> Neurons na camada anterior   i = 1 .. arch_size
+        // [i]    >> Neurons na camada atual
+        Matrix m = Matrix(configurations[i-1], configurations[i]);
+        
+        // Gerando os valores dentro do range
+        for(int l = 0; l < configurations[i-1]; l++){
+            for(int c = 0; c < configurations[i]; c++){
+                m.set(l,c, random_genef(range,precision));
+            }
+        }
+
+        // Insere a hidden layer e segue a vida
+        this->push_layer(&m);
+    }
+}
 
 bool compare_individuals(Individual lhs, Individual rhs) { 
     return lhs.score > rhs.score; // Ordena decrescente
@@ -39,4 +57,9 @@ bool compare_individuals_desc(Individual lhs, Individual rhs) {
 
 int random_gene(int range){
     return (rand()%(2*range))-range;
+}
+
+double random_genef(int range, int precision){
+    if(precision == 0) precision = 1;
+    return ((rand()%(2*range*precision))-(range*precision))/((double)precision);
 }

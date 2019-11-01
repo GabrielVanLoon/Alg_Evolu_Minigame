@@ -43,14 +43,14 @@ Matrix Matrix::operator*(const Matrix &obj){
             }
 
             // RELU
-            C.values[r][j] = std::max(0, C.values[r][j]);
+            C.values[r][j] = std::max(0.0, C.values[r][j]);
         }
     }
 
     return C;
 }
 
-void Matrix::set(int i, int j, int value){
+void Matrix::set(int i, int j, double value){
     if(0 <= i && i < this->rows && 0 <= j && j < this->cols)
         this->values[i][j] = value;
 }
@@ -58,7 +58,7 @@ void Matrix::set(int i, int j, int value){
 void Matrix::print(){
     for(int i = 0; i < this->rows; i++){
         for(int j = 0; j < this->cols; j++)
-            printf("%2d  ", this->values[i][j]);
+            printf("%.4lf  ", this->values[i][j]);
         printf("\n");
     }
 }

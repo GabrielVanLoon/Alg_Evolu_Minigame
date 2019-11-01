@@ -18,6 +18,8 @@
              * Cria um novo individuo tal que:
              * @param range: os pesos da rede serão iniciados aleatoriamente
              * no intervalo I = [-range,range]
+             * @param precision: caso os pesos tenham que ser gerados como pontos
+             * flutuantes. a precisão indica quantas casas decimais serão necessárias.
              * @param configurations: vetor que irá definir a quantidade de 
              * neurônios que cada layer possuiŕia, sendo que:
              * [i==0] >> Neurons na camada de entrada
@@ -25,6 +27,7 @@
              * [i]    >> Neurons na camada atual
              */
             Individual(const std::vector<int> &configurations, int range);
+            Individual(const std::vector<int> &configurations, int range, int precision);
     };
 
     /**
@@ -45,6 +48,7 @@
      * int random_gene(int range);
      * Gera um valor aleatório entre o intervalo I = [-range, range]
      */
-    int random_gene(int range);
+    int    random_gene(int range);
+    double random_genef(int range, int precision);
 
 #endif

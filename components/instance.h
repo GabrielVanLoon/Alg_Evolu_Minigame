@@ -91,7 +91,7 @@
              * @param update caso positivo, dispara as funções que atualiza 
              * as posições e velocidades dos componentes.
              */
-            void render(SDL_Renderer* renderer, bool update, bool atualizarIndividuo);
+            void render(SDL_Renderer* renderer, bool update, bool iniciarRodada);
     };
 
 #endif
