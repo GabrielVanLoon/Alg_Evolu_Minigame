@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 #include <iostream>
 #include <algorithm>
@@ -145,12 +146,24 @@ bool Population::itrain(){
     printf("Geração %02d\tScore atual: %d\tMelhor Score: %d\n", this->epoch, this->ind[0].score, this->best_ind.score);
     if(this->epoch <= 1 || this->best_ind.score > this->ind[0].score){
         printf("Melhor individuo atualizado...\n");
-        this->best_ind = this->ind[0];
+        this->best_ind       = this->ind[0];
+
+        this->best_ind_epoch = this->epoch;
+        this->epochs_without_improve = 0;
+        this->mutation_multiply      = 1;
+    } else {
+        this->epochs_without_improve++;
+        // Verifica se não faz muito tempo que o melhor individuo é melhorado
+        if(this->epochs_without_improve % 10 > 0){
+            this->mutation_multiply = pow(10, this->epochs_without_improve%10);
+        }
+
     }
 
     // 4º Realizando os Crossovers
-    cross_tournament_selection(this);
-
+    //cross_tournament_selection(this);
+    cross_best_vs_all(this);
+    
     // 5º Realizando as Mutações
     mutate_all(this);
 

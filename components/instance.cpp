@@ -75,9 +75,6 @@ void Instance::start(){
 
     // Atirando o projétil
     int proj_vel = output.values[0][0]+1;
-    printf("Velocidade[%d]: %d\n", this->id, proj_vel);
-    proj_vel = (proj_vel > 50)? 1 : proj_vel; 
-
     this->projectile = cannon.shot_projectile(proj_vel, proj_vel, 45);
     this->projectile.set_color(this->r, this->g, this->b, this->a);
 
@@ -130,10 +127,7 @@ void Instance::render(SDL_Renderer* renderer, bool update, bool atualizarIndivid
             Matrix output = this->pop->ind[this->id].get_output();
 
             // Atirando o projétil
-            int proj_vel = output.values[0][0]+1;
-            printf("Velocidade[%d]: %d\n", this->id, proj_vel);
-            proj_vel = (proj_vel > 50)? 1 : proj_vel; 
-
+            int proj_vel = output.values[0][0] + 1;
             this->projectile = cannon.shot_projectile(proj_vel, proj_vel, 45);
             this->projectile.set_color(this->r, this->g, this->b, this->a);
             

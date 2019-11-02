@@ -9,6 +9,7 @@
 #include <time.h>
 #include <iostream>
 #include <vector>
+#include "components/text_message.h"
 #include "components/enemy.h"
 #include "components/cannon.h"
 #include "components/instance.h"
@@ -66,13 +67,13 @@ int main(){
      */
 
     // Declarando as variáveis necessárias
-    std::vector<int> configurations{2,1};
+    std::vector<int> configurations{2,2,1};
     Population pop = Population(TAMANHO_POPULACAO);
     pop.genes_range       = 1;
     pop.mutation_rate     = 50;
     pop.mutation_range    = 1;
     pop.mutation_multiply = 1;
-    pop.genes_precision   = 10000000; 
+    pop.genes_precision   = 1000000; 
     pop.start();
 
     std::vector<Instance> vInstances;
@@ -81,6 +82,8 @@ int main(){
         vInstances.push_back(Instance(SCREEN_WIDTH, SCREEN_HEIGHT, INSTANCE_EASY, 10, &pop, i));
         vInstances[i].start();
     }
+
+    TextMessage messageTeste = TextMessage("olá mundo!", 20, 20, 100, 20);
 
     // Variáveis do loop
     int framesCounter = 0;
@@ -143,6 +146,8 @@ int main(){
                 onlyBestFlag = true;
             }
         }
+
+        messageTeste.render(gRenderer);
 
         // 4ª Etapa - Redesenhando o frame o próximo frame
         SDL_RenderPresent( gRenderer );
