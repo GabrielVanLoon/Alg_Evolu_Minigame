@@ -37,11 +37,6 @@ void Enemy::set_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a){
     this->a = a;
 }
 
-// Verifica se houve colisão de um objeto com outro.
-bool Enemy::check_colission(){
-    return false;
-}
-
 void Enemy::update_position(){
     this->pos_x -= this->vel_x;
 }

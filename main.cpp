@@ -18,7 +18,7 @@
 /**
  * Configurações do jogo
  */
-    const int TAMANHO_POPULACAO = 100;
+    const int TAMANHO_POPULACAO = 300;
 
 
 /**
@@ -67,13 +67,13 @@ int main(){
      */
 
     // Declarando as variáveis necessárias
-    std::vector<int> configurations{2,2,1};
+    std::vector<int> configurations{2,3,2,1};
     Population pop = Population(TAMANHO_POPULACAO);
     pop.genes_range       = 1;
-    pop.mutation_rate     = 50;
+    pop.mutation_rate     = 30;
     pop.mutation_range    = 1;
     pop.mutation_multiply = 1;
-    pop.genes_precision   = 1000000; 
+    pop.genes_precision   = 100; 
     pop.start();
 
     std::vector<Instance> vInstances;
@@ -147,7 +147,7 @@ int main(){
             }
         }
 
-        messageTeste.render(gRenderer);
+        //messageTeste.render(gRenderer);
 
         // 4ª Etapa - Redesenhando o frame o próximo frame
         SDL_RenderPresent( gRenderer );

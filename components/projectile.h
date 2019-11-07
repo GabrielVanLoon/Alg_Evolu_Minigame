@@ -2,6 +2,7 @@
     #define GAME_PROJECTILE_H
 
     #include <SDL2/SDL.h>
+    #include "enemy.h"
 
     /**
      * @class Projectile
@@ -13,19 +14,22 @@
         public: 
             // Atributos de configuração
             int pos_x, pos_y;
-            int vel_x, vel_y;
+            double vel_x, vel_y;
             int radius;
             Uint8 r, g, b, a;
 
             Projectile();
 
-            Projectile(int pos_x, int pos_y, int radius, int vel_x, int vel_y);
+            Projectile(int pos_x, int pos_y, int radius, double vel_x, double vel_y);
 
             void set_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
             void update_position();
 
-            void update_velocity(int acel_x, int acel_y);
+            void update_velocity(double acel_x, double acel_y);
+
+            bool check_colission(int pos_x, int pos_y, int width, int height);
+            bool check_colission(const Enemy &e);
 
             void render(SDL_Renderer* renderer);
 

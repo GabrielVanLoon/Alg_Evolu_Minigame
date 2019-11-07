@@ -33,11 +33,10 @@
             int get_enemy_distance(const Enemy &e);
 
             // Atira um projétil
-            Projectile shot_projectile(int vel_x, int vel_y, int degrees);
+            Projectile shot_projectile(double vel_x, double vel_y, int degrees);
 
             // SDL - Render()
             void render(SDL_Renderer* renderer);
-
 
     };
 

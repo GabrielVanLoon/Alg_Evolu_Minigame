@@ -39,10 +39,10 @@
             Uint8 r, g, b, a;
 
             // Atributos da instância
-            int round_counter;
-            int gravity;
-            int air_resistance;
-            int wind_force;
+            double round_counter;
+            double gravity;
+            double air_resistance;
+            double wind_force;
 
             // Objetos da Instância
             Cannon cannon;

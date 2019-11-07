@@ -1,3 +1,4 @@
+#include <SDL2/SDL.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
@@ -153,19 +154,20 @@ bool Population::itrain(){
         this->mutation_multiply      = 1;
     } else {
         this->epochs_without_improve++;
-        // Verifica se não faz muito tempo que o melhor individuo é melhorado
-        if(this->epochs_without_improve % 10 > 0){
-            this->mutation_multiply = pow(10, this->epochs_without_improve%10);
-        }
-
     }
 
     // 4º Realizando os Crossovers
-    //cross_tournament_selection(this);
-    cross_best_vs_all(this);
-    
     // 5º Realizando as Mutações
-    mutate_all(this);
 
+    // Verifica se não faz muito tempo que o melhor individuo é melhorado
+    if(this->epochs_without_improve%3 > 0){
+        this->mutation_multiply = pow(10, this->epochs_without_improve%3);
+        cross_best_vs_all(this);
+        mutate_all(this);
+    } else {
+        cross_tournament_selection(this);
+        mutate_all(this);
+    }
+    
     return true;
 }
