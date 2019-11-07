@@ -2,7 +2,7 @@
 
 TextMessage::TextMessage(std::string str, int pos_x, int pos_y, int width, int height){
     this->font = TTF_OpenFont("Sans.ttf", 24);
-    this->color = {51, 51, 51};
+    this->color = {0, 0, 0};
     this->str = str;
     this->surface = TTF_RenderText_Solid(this->font, this->str.c_str(), this->color);
     

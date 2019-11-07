@@ -8,6 +8,8 @@
     /**
      * @class TextMessage
      * Função simples que exibe uma mensagem na tela do usuário.
+     * 
+     * Obs.: Não está funcionando por não ser prioridade.
      */
     class TextMessage {
         public: 

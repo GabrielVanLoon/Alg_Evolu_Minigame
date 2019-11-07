@@ -120,6 +120,7 @@ void Instance::render(SDL_Renderer* renderer, bool update, bool atualizarIndivid
             // Utilizando a rede neurão para calcular a velocidade
             double dist_normalized = this->cannon.get_enemy_distance(this->enemy);
             dist_normalized = (dist_normalized-(this->screen_width/2.0))/((double)this->screen_width);
+            
             Matrix input = Matrix(1,2);
             input.set(0,0,dist_normalized);
             input.set(0,1,1);                

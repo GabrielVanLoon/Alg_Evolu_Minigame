@@ -9,7 +9,6 @@
 #include <time.h>
 #include <iostream>
 #include <vector>
-#include "components/text_message.h"
 #include "components/enemy.h"
 #include "components/cannon.h"
 #include "components/instance.h"
@@ -83,8 +82,6 @@ int main(){
         vInstances[i].start();
     }
 
-    TextMessage messageTeste = TextMessage("olá mundo!", 20, 20, 100, 20);
-
     // Variáveis do loop
     int framesCounter = 0;
     bool quitFlag = false;
@@ -147,7 +144,7 @@ int main(){
             }
         }
 
-        //messageTeste.render(gRenderer);
+        messageTeste.render(gRenderer);
 
         // 4ª Etapa - Redesenhando o frame o próximo frame
         SDL_RenderPresent( gRenderer );
