@@ -84,9 +84,13 @@ int main(){
 
     // Variáveis do loop
     int framesCounter = 0;
-    bool quitFlag = false;
-    bool onlyBestFlag = false;
+    bool quitFlag     = false;
     bool changeRequestedFlag = false;
+    char buttonPressed = ' ';
+
+    bool onlyBestFlag    = false;
+    bool randomSpamnFlag = false;
+
 
     while(!quitFlag){
 
@@ -98,8 +102,14 @@ int main(){
             } 
             // User Key Press
             if (gEvent.type == SDL_KEYDOWN){
-                if(gEvent.key.keysym.sym == SDLK_b) 
+                if(gEvent.key.keysym.sym == SDLK_b){
                     changeRequestedFlag = true;   
+                    buttonPressed       = 'b';
+                } else if(gEvent.key.keysym.sym == SDLK_r){
+                    changeRequestedFlag = true;   
+                    buttonPressed       = 'r';
+                    randomSpamnFlag     = !randomSpamnFlag;
+                } 
             }
         }
 
@@ -118,11 +128,18 @@ int main(){
                 vInstances[0].start();
             
             if(allRoundsFinished && changeRequestedFlag){
-                changeRequestedFlag = false;
-                onlyBestFlag        = false;
+                switch(buttonPressed){
+                    case 'b': 
+                        onlyBestFlag = false; 
+                        break;
+                    case 'r':
+                        for(int i = 0; i < TAMANHO_POPULACAO; i++)
+                            vInstances[i].flag_randomSpawn = randomSpamnFlag;
+                        break;
+                }
+                changeRequestedFlag = false; 
             }
         }
-
 
         if(!onlyBestFlag){
             for(int i = 0; i < vInstances.size(); i++){
@@ -139,12 +156,18 @@ int main(){
             }
 
             if(allRoundsFinished && changeRequestedFlag){
-                changeRequestedFlag = false;
-                onlyBestFlag = true;
+                switch(buttonPressed){
+                    case 'b': 
+                        onlyBestFlag = true; 
+                        break;
+                    case 'r':
+                        for(int i = 0; i < TAMANHO_POPULACAO; i++)
+                            vInstances[i].flag_randomSpawn = randomSpamnFlag;
+                        break;
+                }
+                changeRequestedFlag = false; 
             }
         }
-
-        messageTeste.render(gRenderer);
 
         // 4ª Etapa - Redesenhando o frame o próximo frame
         SDL_RenderPresent( gRenderer );

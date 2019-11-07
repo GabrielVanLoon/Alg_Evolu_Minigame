@@ -38,6 +38,9 @@
             int rounds_max;
             Uint8 r, g, b, a;
 
+            // Flags & Controladores
+            bool flag_randomSpawn;
+
             // Atributos da instância
             double round_counter;
             double gravity;
