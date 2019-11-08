@@ -18,7 +18,7 @@
         public: 
             // Atributos de configuração
             int pos_x, pos_y;
-            int vel_x;
+            double vel_x;
             int width, height;
             Uint8 r, g, b, a;
 
@@ -26,13 +26,13 @@
 
             Enemy(int pos_x, int pos_y, int width, int height);
 
-            Enemy(int pos_x, int pos_y, int width, int height, int vel_x);
+            Enemy(int pos_x, int pos_y, int width, int height, double vel_x);
 
             void set_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
             void update_position();
 
-            void update_velocity(int acel_x);
+            void update_velocity(double acel_x);
 
             void render(SDL_Renderer* renderer);
 

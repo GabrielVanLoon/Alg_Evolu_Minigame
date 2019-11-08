@@ -5,7 +5,7 @@ Enemy::Enemy(){
     this->pos_y = 0;
     this->width = 40;
     this->height = 60;
-    this->vel_x  = 0;
+    this->vel_x  = 0.0;
     this->g = this->b = this->a = 0x00;
     this->r = 0xFF;
 }
@@ -15,12 +15,12 @@ Enemy::Enemy(int pos_x, int pos_y, int width, int height){
     this->pos_y = pos_y;
     this->width = width;
     this->height = height;
-    this->vel_x  = 0;
+    this->vel_x  = 0.0;
     this->g = this->b = this->a = 0x00;
     this->r = 0xFF;
 }
 
-Enemy::Enemy(int pos_x, int pos_y, int width, int height, int vel_x){
+Enemy::Enemy(int pos_x, int pos_y, int width, int height, double vel_x){
     this->pos_x = pos_x;
     this->pos_y = pos_y;
     this->width = width;
@@ -41,7 +41,7 @@ void Enemy::update_position(){
     this->pos_x -= this->vel_x;
 }
 
-void Enemy::update_velocity(int acel_x){
+void Enemy::update_velocity(double acel_x){
     this->vel_x -= acel_x;
 }
 

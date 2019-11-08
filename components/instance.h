@@ -2,6 +2,7 @@
     #define GAME_INSTANCE_H
 
     #include <SDL2/SDL.h>
+    #include "projectile.h"
     #include "enemy.h"
     #include "cannon.h"
     #include "../network/matrix.h"
@@ -40,9 +41,12 @@
 
             // Flags & Controladores
             bool flag_randomSpawn;
+            bool flag_randomSpawnFly;
+            bool flag_enemiesRun;
+            bool flag_flyingEnemies;
 
             // Atributos da instância
-            double round_counter;
+            int    round_counter;
             double gravity;
             double air_resistance;
             double wind_force;
@@ -51,6 +55,7 @@
             Cannon cannon;
             Enemy  enemy;
             Projectile projectile;
+            int proj_min_dist;
 
             // Objetos utilizados para o AG
             int id;
@@ -96,5 +101,9 @@
              */
             void render(SDL_Renderer* renderer, bool update, bool iniciarRodada);
     };
+
+    double random_double(int range, int precision);
+
+    int get_dist_manhattan(const Projectile &p, const Enemy &e);
 
 #endif

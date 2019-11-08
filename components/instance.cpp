@@ -4,6 +4,31 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define PI 3.14159265
+
+#define CANNON_DEFAULT_WIDTH  50
+#define CANNON_DEFAULT_HEIGHT 30
+
+#define ENEMY_DEFAULT_WIDTH   40
+#define ENEMY_DEFAULT_HEIGHT  60
+
+#define ENEMY_MAX_VELOCITY   3.0
+
+#define PROJ_MAX_VELOCITY    45.0
+#define PROJ_MAX_ANGLE       PI / 2.0  // 90º
+#define PROJ_MIN_ANGLE       PI / 6.0  // 30º
+
+
+// Função auxiliar para gerar valores double aleatorios
+double random_double(int range, int precision){
+    if(precision == 0) precision = 1;
+    return (rand()%(range*precision))/((double)precision);
+}
+
+int get_dist_manhattan(const Projectile &p, const Enemy &e){
+    return abs(p.pos_x-e.pos_x) + abs(p.pos_y-e.pos_y);
+}
+
 Instance::Instance(){
     this->screen_width  = 400;
     this->screen_height = 400;
@@ -14,7 +39,10 @@ Instance::Instance(){
     this->rounds_max = 5;
     this->r = this->g = this->b = this->a = 0x00;
 
-    this->flag_randomSpawn = false;
+    this->flag_randomSpawn   = false;
+    this->flag_enemiesRun    = false;
+    this->flag_flyingEnemies = false;
+    this->flag_randomSpawnFly = false;
 }
 
 Instance::Instance(int screen_width, int screen_height, int difficulty, int rounds_max, Population* pop, int id){
@@ -26,13 +54,15 @@ Instance::Instance(int screen_width, int screen_height, int difficulty, int roun
     this->rounds_max = rounds_max;
     this->r = this->g = this->b = this->a = 0x00;
 
-    this->flag_randomSpawn = false;
+    this->flag_randomSpawn   = false;
+    this->flag_enemiesRun    = false;
+    this->flag_flyingEnemies = false;
+    this->flag_randomSpawnFly = false;
 
     this->id  = id;
     this->pop = pop;
 }
        
-
 void Instance::set_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a){
     this->r = r;
     this->g = g;
@@ -48,7 +78,7 @@ void Instance::start(){
 
     //printf("Iniciando instância nº%d...\n", this->id);
 
-    // Preparando os parâmetris
+    // Preparando os parâmetros
     this->round_counter  =  1;
     this->gravity        = -1.0;
     this->air_resistance =  0.0;
@@ -63,7 +93,7 @@ void Instance::start(){
     this->pop->ind[this->id].score = 0;
 
     // Preparando o canhão
-    this->cannon = Cannon(20, this->screen_height-30, 50, 30);
+    this->cannon = Cannon(20, this->screen_height-30, CANNON_DEFAULT_WIDTH, CANNON_DEFAULT_HEIGHT);
     this->cannon.set_color(this->r, this->g, this->b, this->a);
     
     // Atualizando o status do jogo
@@ -80,6 +110,10 @@ void Instance::render(SDL_Renderer* renderer, bool update, bool atualizarIndivid
 
         this->projectile.update_position();
         this->projectile.update_velocity(acel_x, acel_y);
+        
+        this->enemy.update_position();
+
+        this->proj_min_dist = std::min(this->proj_min_dist, get_dist_manhattan(this->projectile, this->enemy));
     }
 
     // Se o projétil atinge o alvo então pausa a instância
@@ -94,6 +128,7 @@ void Instance::render(SDL_Renderer* renderer, bool update, bool atualizarIndivid
         } else {
             this->status = INSTANCE_WAITING;
         }
+        
     }
 
     // Se o projétil atinge o chão ou foge muito da largura passa para ou pausa a instância
@@ -102,11 +137,13 @@ void Instance::render(SDL_Renderer* renderer, bool update, bool atualizarIndivid
         
         // Incrementa o contador de rodadas e calcula a loss
         this->round_counter += 1;
-
-        if(this->projectile.pos_y >= this->screen_height)
-            this->pop->ind[this->id].score += abs(this->projectile.pos_x - this->enemy.pos_x);
-        else 
-            this->pop->ind[this->id].score += 2*this->screen_width;
+        
+        // if(this->projectile.pos_y >= this->screen_height)
+        //     this->pop->ind[this->id].score += abs(this->projectile.pos_x - this->enemy.pos_x);
+        // else 
+        //     this->pop->ind[this->id].score += 2*this->screen_width;
+        
+        this->pop->ind[this->id].score += this->proj_min_dist;
 
         if(this->round_counter > this->rounds_max){
             this->status = INSTANCE_FINISHED;
@@ -114,32 +151,65 @@ void Instance::render(SDL_Renderer* renderer, bool update, bool atualizarIndivid
             this->status = INSTANCE_WAITING;
         }
     }
-            
+
+    // Se o inimigo tocou no canhão 
+    if(this->status == INSTANCE_RUNNING && this->enemy.pos_x <= this->cannon.pos_x+this->cannon.width){
+        // O inimigo para e aumenta penaliza o score
+        this->pop->ind[this->id].score += 100;
+        this->enemy.vel_x = 0.0;
+    }
+
     // Caso o usuário dê a permissão para iniciar uma nova rodada
     if(this->status == INSTANCE_WAITING){
         
-        // Posicionando o inimigo
+        // Configurando e posicionando o inimigo
         if(this->flag_randomSpawn == true)
-            this->enemy = Enemy(this->screen_width-(rand()%900)-60, this->screen_height-60, 40, 60);
+            this->enemy = Enemy( (rand()%(this->screen_width-140))+70, this->screen_height-60, ENEMY_DEFAULT_WIDTH, ENEMY_DEFAULT_HEIGHT);
         else
-            this->enemy = Enemy(this->screen_width-(100*this->round_counter)-60, this->screen_height-60, 40, 60);
+            this->enemy = Enemy(this->screen_width-(100*this->round_counter)-60, this->screen_height-60, ENEMY_DEFAULT_WIDTH, ENEMY_DEFAULT_HEIGHT);
         this->enemy.set_color(this->r, this->g, this->b, this->a);
 
-        // Utilizando a rede neurão para calcular a velocidade
-        double dist_normalized = this->cannon.get_enemy_distance(this->enemy);
-        dist_normalized = (dist_normalized-(this->screen_width/2.0))/((double)this->screen_width);
-        
-        Matrix input = Matrix(1,2);
-        input.set(0,0,dist_normalized);
-        input.set(0,1,1);                
+        if(this->flag_flyingEnemies == true){
+            if(this->flag_randomSpawnFly){
+                this->enemy.pos_y = rand()%(this->screen_height-this->enemy.height);
+            } else {
+                this->enemy.pos_y = this->screen_height-(this->round_counter*60);
+            }
+        }
 
+        if(this->flag_enemiesRun == true)
+            this->enemy.vel_x = random_double((int)ENEMY_MAX_VELOCITY,100);
+        else
+            this->enemy.vel_x = 0.0;
+
+        // Configurando a loss da rodada
+        this->proj_min_dist  = 99999999;
+
+
+        // Calculando os parâmetros de entrada da rede e normalizando seus valores
+        double dist_x_normalized = this->cannon.get_enemy_distance(this->enemy);
+        dist_x_normalized        = (dist_x_normalized-(this->screen_width/2.0))/((double)this->screen_width);
+        double dist_y_normalized = this->enemy.pos_y-(this->screen_height-this->enemy.height);
+        dist_y_normalized        = dist_y_normalized/((double)this->screen_height-this->enemy.height);
+        double velx_normalized = this->enemy.vel_x / ENEMY_MAX_VELOCITY;
+        
+        // // Construindo a matriz de entrada
+        Matrix input = Matrix(1,4);
+        input.set(0,0,dist_x_normalized);
+        input.set(0,1,dist_y_normalized);
+        input.set(0,2,velx_normalized);
+        input.set(0,3,1);                
+
+        // Executando a rede neural
         this->pop->ind[this->id].run(input);
         Matrix output = this->pop->ind[this->id].get_output();
 
-        // Atirando o projétil
-        double proj_vel = output.values[0][0]*50;
-        // if(this->id == 0) printf("Velocidade %lf\n", proj_vel);
-        this->projectile = cannon.shot_projectile(proj_vel, proj_vel, 45);
+        // Ajustando os parâmetros de saída
+        double proj_vel   = std::min( PROJ_MAX_VELOCITY, output.values[0][0] * PROJ_MAX_VELOCITY);
+        double proj_angle = std::min(1.0, output.values[0][1]);
+        proj_angle = (proj_angle * (PROJ_MAX_ANGLE-PROJ_MIN_ANGLE)) + PROJ_MIN_ANGLE;
+
+        this->projectile = cannon.shot_projectile(proj_vel*cos(proj_angle), proj_vel*sin(proj_angle), 45);
         this->projectile.set_color(this->r, this->g, this->b, this->a);
         
         this->status = INSTANCE_RUNNING;
