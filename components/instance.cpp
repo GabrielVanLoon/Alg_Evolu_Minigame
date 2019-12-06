@@ -185,7 +185,7 @@ void Instance::render(SDL_Renderer* renderer, bool update, bool atualizarIndivid
     else if(this->status == INSTANCE_WAITING && this->type == INST_TYPE_ALL_POSIX){
         
         // As instâncias do tipo ALL_POSIX tem obrigatoriamente 4*8 rodadas
-        this->rounds_max = 32;
+        this->rounds_max = 36;
 
         // A posicao da X e Y do inimigo são definidar pela rodada tal que
         int e_posX = (this->round_counter-1) / 4; // 8 posicoes distintas

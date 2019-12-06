@@ -21,7 +21,9 @@
  */
     const int  TAMANHO_POPULACAO = 150;
     const bool AUTO_UPGRADE      = false;
-    const int  INSTANCE_TYPE     = INST_TYPE_ALL_POSIX; //INST_TYPE_FLAG_CONTROL;
+    const int  INSTANCE_TYPE     = INST_TYPE_ALL_POSIX;
+    // const bool AUTO_UPGRADE      = true;
+    // const int  INSTANCE_TYPE     = INST_TYPE_FLAG_CONTROL;
 
 /**
  * CONFIGURAÇÕES GERAIS DO PROGRAMA
@@ -38,7 +40,7 @@
 
 
 int init();
-void auto_upgrade(int gen, std::vector<Instance> &v);
+bool auto_upgrade(int gen, std::vector<Instance> &v);
 
 int main(){
 
@@ -47,11 +49,11 @@ int main(){
 
     // Declarando as variáveis necessárias
     // std::vector<int> configurations{2,3,2,1}; v1.0
-    std::vector<int> configurations{4,3,2};
+    std::vector<int> configurations{4,3,2,2};
     
     Population pop = Population(TAMANHO_POPULACAO);
     pop.genes_range       = 1;
-    pop.mutation_rate     = 30;
+    pop.mutation_rate     = 40;
     pop.mutation_range    = 1;
     pop.mutation_multiply = 1;
     pop.genes_precision   = 100; 
@@ -79,8 +81,9 @@ int main(){
 
     while(!quitFlag){
         
-        if(AUTO_UPGRADE){
-            auto_upgrade(pop.epoch, vInstances);
+        // Caso o AG esteja no modo de upgrade contínuo
+        if(AUTO_UPGRADE && auto_upgrade(pop.epoch, vInstances)){
+            pop.enviroment_changed = true;
         }
 
         // 1ª Etapa - Lendo os eventos disparados
@@ -160,28 +163,35 @@ int main(){
                     onlyBestFlag = !onlyBestFlag; 
                     break;
                 case 'r':
+                    pop.enviroment_changed = true;
                     for(int i = 0; i < TAMANHO_POPULACAO; i++)
                         vInstances[i].flag_randomSpawn = randomSpamnFlag;
                     break;
                 case 't':
+                    pop.enviroment_changed = true;
                     for(int i = 0; i < TAMANHO_POPULACAO; i++)
                         vInstances[i].flag_randomSpawnFly = randomFlySpamnFlag;
                     break;
                 case 'y':
+                    pop.enviroment_changed = true;
                     for(int i = 0; i < TAMANHO_POPULACAO; i++){
                         vInstances[i].flag_randomSpawn = randomSpamnFlag;
                         vInstances[i].flag_randomSpawnFly = randomFlySpamnFlag;
                     }
                     break;
                 case 'e':
+                    pop.enviroment_changed = true;
                     for(int i = 0; i < TAMANHO_POPULACAO; i++)
                         vInstances[i].flag_enemiesRun = enemiesRunFlag;
                     break;
                 case 'f':
+                    pop.enviroment_changed = true;
                     for(int i = 0; i < TAMANHO_POPULACAO; i++)
                         vInstances[i].flag_flyingEnemies = enemiesFlyFlag;
                     break;
                 case 'k':
+                    printf("GENOCIDIO DA POPULAÇÃO");
+                    pop.enviroment_changed = true;
                     for(int i = 1; i < pop.size(); i++)
                         pop.ind[i] = Individual(configurations, pop.genes_range, pop.genes_precision);
                     break;
@@ -237,7 +247,7 @@ int init(){
     return 0;
 }
 
-void auto_upgrade(int gen, std::vector<Instance> &v){
+bool auto_upgrade(int gen, std::vector<Instance> &v){
 
     if(gen <= 1){
         //printf("Estágio inicial...\n");
@@ -247,6 +257,7 @@ void auto_upgrade(int gen, std::vector<Instance> &v){
             v[i].flag_randomSpawnFly = false;
             v[i].flag_enemiesRun    = false;
         }
+        return true;
     }
 
     else if(gen == 7){
@@ -257,26 +268,19 @@ void auto_upgrade(int gen, std::vector<Instance> &v){
             v[i].flag_randomSpawnFly = false;
             v[i].flag_enemiesRun    = false;
         }
+        return true;
     }
 
     else if(gen == 30){
         //printf("Realizando upgrade...\n");
         for(int i = 0; i < v.size(); i++){
-            v[i].flag_flyingEnemies = true;
-            v[i].flag_randomSpawn   = true;
-            v[i].flag_randomSpawnFly = false;
-            v[i].flag_enemiesRun    = false;
+            // v[i].flag_flyingEnemies = true;
+            // v[i].flag_randomSpawn   = true;
+            // v[i].flag_randomSpawnFly = false;
+            //v[i].flag_enemiesRun    = false;
         }
+        return true;
     }
 
-    // else if(gen == 35){
-    //     for(int i = 0; i < v.size(); i++){
-    //         v[i].flag_flyingEnemies = true;
-    //         v[i].flag_randomSpawn   = true;
-    //         v[i].flag_randomSpawnFly = true;
-    //         v[i].flag_enemiesRun    = false;
-    //     }
-    // }
-
-
+    return false;
 }

@@ -21,7 +21,8 @@
             int epochs_without_improve;
             int avg_score; 
             int std_score;
-            
+            bool enviroment_changed;
+
             /**
              * Parâmetros de Configuração
              * @param genes_range    - Range em que os pesos da rede serão iniciados
@@ -34,7 +35,7 @@
             int genes_range;
             int mutation_rate;
             int mutation_range;
-            int mutation_multiply;
+            double mutation_multiply;
             int genes_precision;
 
             /**

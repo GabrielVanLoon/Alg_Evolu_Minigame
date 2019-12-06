@@ -29,6 +29,8 @@ void Population::start(const std::vector<int> &configurations){
     srand(time(NULL));
     for(int i = 0; i < this->size(); i++)
         this->ind[i] = Individual(configurations, this->genes_range, this->genes_precision);
+    
+    this->enviroment_changed = true;
 }
 
 void Population::start(){
@@ -38,6 +40,8 @@ void Population::start(){
     std::vector<int> configurations({2, 1});
     for(int i = 0; i < this->size(); i++)
         this->start(configurations);
+
+    this->enviroment_changed = true;
 }
 
 int Population::size(){
@@ -145,13 +149,15 @@ bool Population::itrain(){
 
     // 3º Calcular performance geral e verificar se houve melhoria
     printf("Geração %02d\tScore atual: %d\tMelhor Score: %d\n", this->epoch, this->ind[0].score, this->best_ind.score);
-    if(this->epoch <= 1 || this->best_ind.score > this->ind[0].score){
+    
+    if(this->enviroment_changed || this->best_ind.score > this->ind[0].score){
         printf("Melhor individuo atualizado...\n");
         this->best_ind       = this->ind[0];
-
         this->best_ind_epoch = this->epoch;
+        
+        this->enviroment_changed     = false;
         this->epochs_without_improve = 0;
-        this->mutation_multiply      = 1;
+        this->mutation_multiply      = 1.0;
     } else {
         this->epochs_without_improve++;
     }
@@ -159,17 +165,37 @@ bool Population::itrain(){
     // 4º Realizando os Crossovers
     // 5º Realizando as Mutações
 
+    // Caso não esteja mais evoluindo nada, mata geral
+    //if(this->epochs_without_improve > 500){
+    //    for(int i = 0; i < this->size(); i++)
+            // pop.ind[i] = Individual(configurations, pop.genes_range, pop.genes_precision);
+    // }
+    // @TODO: Precisa trazer as configurações 
+
+    // Atualiza o mulltiply da mutação
+    if(this->epochs_without_improve > 10){
+        int exp = std::min(6, (this->epochs_without_improve-5)/5);
+        this->mutation_multiply = std::pow(10, exp);
+        printf("%d\n", exp);
+    }
+
     // Verifica se não faz muito tempo que o melhor individuo é melhorado
-    if(this->epochs_without_improve%3 > 0){
-        //this->mutation_multiply = pow(10, this->epochs_without_improve%3);
+    if(this->epochs_without_improve  > 100){
+        // cross_tournament_selection(this);
         cross_best_vs_all(this);
-        //cross_tournament_selection(this);
+        mutate_all(this);
+    } else if( this->epochs_without_improve > 20){
+        //this->mutation_multiply = pow(10, this->epochs_without_improve%3);
+        // cross_tournament_selection(this);
+        cross_best_vs_all(this);
         mutate_all(this);
     } else {
         cross_best_vs_all(this);
-        // cross_tournament_selection(this);
         mutate_all(this);
     }
     
+    // Print CSV com Best e média
+
+
     return true;
 }

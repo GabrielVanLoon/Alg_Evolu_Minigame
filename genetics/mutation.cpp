@@ -36,7 +36,8 @@
                     if( rand()%100 > rate) 
                         continue;
 
-                    ind.weights[layer].values[i][j] += random_genef(range, precision)/((double)multiply);
+                    ind.weights[layer].values[i][j] += random_genef(range, precision * multiply);
+                    // ind.weights[layer].values[i][j] += random_genef(range, precision);
                 }
             }
         }
@@ -49,7 +50,8 @@
                 if( rand()%100 > rate) 
                     continue;
 
-                ind.weights[layer].values[i][j] += random_genef(range, precision)/((double)multiply);
+                ind.weights[layer].values[i][j] += random_genef(range, precision * multiply);
+                // ind.weights[layer].values[i][j] += random_genef(range, precision);
             }
         }
     }
