@@ -43,7 +43,10 @@ Matrix Matrix::operator*(const Matrix &obj){
             }
 
             // RELU
-            C.values[r][j] = std::max(0.0, C.values[r][j]);
+            // C.values[r][j] = std::max(0.0, C.values[r][j]);
+
+            // Leaky RELU
+            C.values[r][j] = std::max(0.1 * C.values[r][j], C.values[r][j]);
         }
     }
 

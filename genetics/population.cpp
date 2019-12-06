@@ -167,6 +167,7 @@ bool Population::itrain(){
         mutate_all(this);
     } else {
         cross_best_vs_all(this);
+        // cross_tournament_selection(this);
         mutate_all(this);
     }
     

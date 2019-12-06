@@ -15,8 +15,8 @@
 #define ENEMY_MAX_VELOCITY   3.0
 
 #define PROJ_MAX_VELOCITY    45.0
-#define PROJ_MAX_ANGLE       PI / 2.0  // 90º
-#define PROJ_MIN_ANGLE       PI / 6.0  // 30º
+#define PROJ_MAX_ANGLE       (PI * 4.0)/9.0  // 90º == "PI/2.0" | 80º == "PI*4.0/9.0" 
+#define PROJ_MIN_ANGLE       PI/6.0  // 30º
 
 
 // Função auxiliar para gerar valores double aleatorios
@@ -39,6 +39,7 @@ Instance::Instance(){
     this->rounds_max = 5;
     this->r = this->g = this->b = this->a = 0x00;
 
+    this->type = INST_TYPE_DEFAULT;
     this->flag_randomSpawn   = false;
     this->flag_enemiesRun    = false;
     this->flag_flyingEnemies = false;
@@ -54,6 +55,7 @@ Instance::Instance(int screen_width, int screen_height, int difficulty, int roun
     this->rounds_max = rounds_max;
     this->r = this->g = this->b = this->a = 0x00;
 
+    this->type = INST_TYPE_DEFAULT;
     this->flag_randomSpawn   = false;
     this->flag_enemiesRun    = false;
     this->flag_flyingEnemies = false;
@@ -132,17 +134,11 @@ void Instance::render(SDL_Renderer* renderer, bool update, bool atualizarIndivid
     }
 
     // Se o projétil atinge o chão ou foge muito da largura passa para ou pausa a instância
-    if(this->status == INSTANCE_RUNNING && (this->projectile.pos_y >= this->screen_height 
+    else if(this->status == INSTANCE_RUNNING && (this->projectile.pos_y >= this->screen_height 
             || this->projectile.pos_x > 2*this->screen_width)){
         
         // Incrementa o contador de rodadas e calcula a loss
         this->round_counter += 1;
-        
-        // if(this->projectile.pos_y >= this->screen_height)
-        //     this->pop->ind[this->id].score += abs(this->projectile.pos_x - this->enemy.pos_x);
-        // else 
-        //     this->pop->ind[this->id].score += 2*this->screen_width;
-        
         this->pop->ind[this->id].score += this->proj_min_dist;
 
         if(this->round_counter > this->rounds_max){
@@ -159,8 +155,8 @@ void Instance::render(SDL_Renderer* renderer, bool update, bool atualizarIndivid
         this->enemy.vel_x = 0.0;
     }
 
-    // Caso o usuário dê a permissão para iniciar uma nova rodada
-    if(this->status == INSTANCE_WAITING){
+    // Prepara uma nova rodada do tipo FLAG CONTROL
+    if(this->status == INSTANCE_WAITING && this->type == INST_TYPE_FLAG_CONTROL){
         
         // Configurando e posicionando o inimigo
         if(this->flag_randomSpawn == true)
@@ -184,8 +180,32 @@ void Instance::render(SDL_Renderer* renderer, bool update, bool atualizarIndivid
 
         // Configurando a loss da rodada
         this->proj_min_dist  = 99999999;
+    }
 
+    else if(this->status == INSTANCE_WAITING && this->type == INST_TYPE_ALL_POSIX){
+        
+        // As instâncias do tipo ALL_POSIX tem obrigatoriamente 4*8 rodadas
+        this->rounds_max = 32;
 
+        // A posicao da X e Y do inimigo são definidar pela rodada tal que
+        int e_posX = (this->round_counter-1) / 4; // 8 posicoes distintas
+        int e_posY = (this->round_counter-1) % 4; // 4 posicoes distintas
+
+        int pos_x = (this->flag_randomSpawn)    ? (rand()%(this->screen_width-140))+70 : this->screen_width-(120*e_posX)-60; 
+        int pos_y = (this->flag_randomSpawnFly) ? rand()%(this->screen_height-this->enemy.height) : this->screen_height-(e_posY*200)-60; 
+        
+        this->enemy = Enemy( pos_x, pos_y, ENEMY_DEFAULT_WIDTH, ENEMY_DEFAULT_HEIGHT);
+        this->enemy.set_color(this->r, this->g, this->b, this->a);
+
+        // Configurando a loss da rodada
+        this->proj_min_dist  = 99999999;
+    }
+
+    // Após a partida ter sido preparada, entra com os dados na rede neural
+    // sendo eles devidamente normalizados na entrada e na saída e em seguida
+    // inicia a instância.
+    if(this->status == INSTANCE_WAITING){
+        
         // Calculando os parâmetros de entrada da rede e normalizando seus valores
         double dist_x_normalized = this->cannon.get_enemy_distance(this->enemy);
         dist_x_normalized        = (dist_x_normalized-(this->screen_width/2.0))/((double)this->screen_width);
@@ -193,7 +213,7 @@ void Instance::render(SDL_Renderer* renderer, bool update, bool atualizarIndivid
         dist_y_normalized        = dist_y_normalized/((double)this->screen_height-this->enemy.height);
         double velx_normalized = this->enemy.vel_x / ENEMY_MAX_VELOCITY;
         
-        // // Construindo a matriz de entrada
+        // Construindo a matriz de entrada
         Matrix input = Matrix(1,4);
         input.set(0,0,dist_x_normalized);
         input.set(0,1,dist_y_normalized);

@@ -12,6 +12,10 @@
     #define INSTANCE_NORMAL 2
     #define INSTANCE_HARD   3
 
+    #define INST_TYPE_DEFAULT      1
+    #define INST_TYPE_FLAG_CONTROL 1
+    #define INST_TYPE_ALL_POSIX    2
+
     #define INSTANCE_INIT      1
     #define INSTANCE_RUNNING   2
     #define INSTANCE_WAITING   3
@@ -40,6 +44,7 @@
             Uint8 r, g, b, a;
 
             // Flags & Controladores
+            int  type;
             bool flag_randomSpawn;
             bool flag_randomSpawnFly;
             bool flag_enemiesRun;

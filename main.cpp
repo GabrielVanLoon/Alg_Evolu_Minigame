@@ -3,6 +3,8 @@
  * 
  * Algoritmos Genéticos + RN - Shooter Minigame
  * 
+ * GITLAB/simoesusp/disciplinas
+ * SCC0713 -> Inserir o projeto finalizado no Google Docs
  */
 #include <SDL2/SDL.h>
 #include <stdlib.h>
@@ -17,15 +19,15 @@
 /**
  * Configurações do jogo
  */
-    const int  TAMANHO_POPULACAO = 300;
-    const bool AUTO_UPGRADE      = true;
+    const int  TAMANHO_POPULACAO = 150;
+    const bool AUTO_UPGRADE      = false;
+    const int  INSTANCE_TYPE     = INST_TYPE_ALL_POSIX; //INST_TYPE_FLAG_CONTROL;
 
 /**
  * CONFIGURAÇÕES GERAIS DO PROGRAMA
  */ 
     const int SCREEN_WIDTH  = 1200;
     const int SCREEN_HEIGHT = 680;
-
 
 /**
  * VARIÁVEIS GLOBAIS 
@@ -59,6 +61,7 @@ int main(){
 
     for(int i = 0; i < TAMANHO_POPULACAO; i++){
         vInstances.push_back(Instance(SCREEN_WIDTH, SCREEN_HEIGHT, INSTANCE_EASY, 10, &pop, i));
+        vInstances[i].type = INSTANCE_TYPE;
         vInstances[i].start();
     }
 
@@ -88,25 +91,32 @@ int main(){
             } 
             // User Key Press
             if (gEvent.type == SDL_KEYDOWN){
-                if(gEvent.key.keysym.sym == SDLK_b){
+                if(gEvent.key.keysym.sym == SDLK_b){            // MOSTRAR APENAS  O MELHOR
                     changeRequestedFlag = true;   
-                    buttonPressed       = 'b';
-                } else if(gEvent.key.keysym.sym == SDLK_r){
+                    buttonPressed       = 'b'; 
+                } else if(gEvent.key.keysym.sym == SDLK_r){     // RANDOM SPAWM X
                     changeRequestedFlag = true;   
                     buttonPressed       = 'r';
                     randomSpamnFlag     = !randomSpamnFlag;
-                } else if(gEvent.key.keysym.sym == SDLK_t){
+                } else if(gEvent.key.keysym.sym == SDLK_t){     // RANDOM SPAWM Y
                     changeRequestedFlag = true;   
                     buttonPressed       = 't';
                     randomFlySpamnFlag  = !randomFlySpamnFlag;
-                } else if(gEvent.key.keysym.sym == SDLK_e){
+                } else if(gEvent.key.keysym.sym == SDLK_y){     // RAMDOM SPAWN X & Y
+                    changeRequestedFlag = true;   
+                    buttonPressed  = 'y';
+                    randomSpamnFlag = randomFlySpamnFlag = !randomSpamnFlag;
+                } else if(gEvent.key.keysym.sym == SDLK_e){     // ENEMIES RUN
                     changeRequestedFlag = true;   
                     buttonPressed  = 'e';
                     enemiesRunFlag = !enemiesRunFlag;
-                } else if(gEvent.key.keysym.sym == SDLK_f){
+                } else if(gEvent.key.keysym.sym == SDLK_f){     // ENEMIES FLY
                     changeRequestedFlag = true;   
                     buttonPressed  = 'f';
                     enemiesFlyFlag = !enemiesFlyFlag;
+                } else if(gEvent.key.keysym.sym == SDLK_k){     // GENOCIDIO, KILL THEM ALL!!!!
+                    changeRequestedFlag = true;   
+                    buttonPressed       = 'k';
                 } 
             }
         }
@@ -157,6 +167,12 @@ int main(){
                     for(int i = 0; i < TAMANHO_POPULACAO; i++)
                         vInstances[i].flag_randomSpawnFly = randomFlySpamnFlag;
                     break;
+                case 'y':
+                    for(int i = 0; i < TAMANHO_POPULACAO; i++){
+                        vInstances[i].flag_randomSpawn = randomSpamnFlag;
+                        vInstances[i].flag_randomSpawnFly = randomFlySpamnFlag;
+                    }
+                    break;
                 case 'e':
                     for(int i = 0; i < TAMANHO_POPULACAO; i++)
                         vInstances[i].flag_enemiesRun = enemiesRunFlag;
@@ -164,6 +180,10 @@ int main(){
                 case 'f':
                     for(int i = 0; i < TAMANHO_POPULACAO; i++)
                         vInstances[i].flag_flyingEnemies = enemiesFlyFlag;
+                    break;
+                case 'k':
+                    for(int i = 1; i < pop.size(); i++)
+                        pop.ind[i] = Individual(configurations, pop.genes_range, pop.genes_precision);
                     break;
             }
             changeRequestedFlag = false; 
@@ -239,7 +259,7 @@ void auto_upgrade(int gen, std::vector<Instance> &v){
         }
     }
 
-    else if(gen == 25){
+    else if(gen == 30){
         //printf("Realizando upgrade...\n");
         for(int i = 0; i < v.size(); i++){
             v[i].flag_flyingEnemies = true;
