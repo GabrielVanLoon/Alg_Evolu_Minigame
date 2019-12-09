@@ -19,8 +19,8 @@
             int best_ind_epoch;
             int epoch;
             int epochs_without_improve;
-            int avg_score; 
-            int std_score;
+            unsigned long avg_score; 
+            unsigned long std_score;
             bool enviroment_changed;
 
             /**

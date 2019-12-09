@@ -49,7 +49,7 @@ int main(){
 
     // Declarando as variáveis necessárias
     // std::vector<int> configurations{2,3,2,1}; v1.0
-    std::vector<int> configurations{4,3,2,2};
+    std::vector<int> configurations{4,3,3,3,2};
     
     Population pop = Population(TAMANHO_POPULACAO);
     pop.genes_range       = 1;

@@ -147,9 +147,21 @@ bool Population::itrain(){
     // 2º Ordenar os individuos do melhor para o pior
     std::sort(this->ind.begin(), this->ind.end(), compare_individuals_desc);
 
-    // 3º Calcular performance geral e verificar se houve melhoria
-    printf("Geração %02d\tScore atual: %d\tMelhor Score: %d\n", this->epoch, this->ind[0].score, this->best_ind.score);
-    
+    // 3º Calcular performance e dados gerais da geração
+    this->avg_score = 0;
+    for(int i = 0; i < this->size(); i++)
+        this->avg_score += this->ind[i].score;
+    this->avg_score = this->avg_score/this->size();
+
+    this->std_score = 0;
+    for(int i = 0; i < this->size(); i++)
+        this->std_score += (this->ind[i].score-this->avg_score)*(this->ind[i].score-this->avg_score);
+    this->std_score = std::sqrt(this->std_score/(this->size()-1));
+
+    printf("Gen: %02d,\tAtual: %d,\tBest: %d,\tAvg: %lu,\tStd: %lu,\n", this->epoch, this->ind[0].score, this->best_ind.score, this->avg_score, this->std_score);
+    printf("Top 5: %d\t%d\t%d\t%d\t%d\n", this->ind[0].score, this->ind[1].score, this->ind[2].score, this->ind[3].score, this->ind[4].score);
+
+    // Verificando se houve alguma melhoria
     if(this->enviroment_changed || this->best_ind.score > this->ind[0].score){
         printf("Melhor individuo atualizado...\n");
         this->best_ind       = this->ind[0];
@@ -176,7 +188,7 @@ bool Population::itrain(){
     if(this->epochs_without_improve > 10){
         int exp = std::min(6, (this->epochs_without_improve-5)/5);
         this->mutation_multiply = std::pow(10, exp);
-        printf("%d\n", exp);
+        printf("Mutation Multiply: %d\n", exp);
     }
 
     // Verifica se não faz muito tempo que o melhor individuo é melhorado
@@ -195,7 +207,7 @@ bool Population::itrain(){
     }
     
     // Print CSV com Best e média
-
+    printf("\n");
 
     return true;
 }
