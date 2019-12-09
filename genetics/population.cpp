@@ -147,7 +147,12 @@ bool Population::itrain(){
     // 2º Ordenar os individuos do melhor para o pior
     std::sort(this->ind.begin(), this->ind.end(), compare_individuals_desc);
 
-    // 3º Calcular performance e dados gerais da geração
+    // Trick: Para evitar demora na busca de lugares ótimos, os 3 piores serão uma cópia do best
+    // this->ind[this->size()-1] = this->ind[0];
+    // this->ind[this->size()-2] = this->ind[0];
+    // this->ind[this->size()-3] = this->ind[0];
+
+    // 3º Calcular performance e dados gerais da geração e exibindo na tela
     this->avg_score = 0;
     for(int i = 0; i < this->size(); i++)
         this->avg_score += this->ind[i].score;
@@ -170,6 +175,7 @@ bool Population::itrain(){
         this->enviroment_changed     = false;
         this->epochs_without_improve = 0;
         this->mutation_multiply      = 1.0;
+        this->mutation_divider      = 1.0;
     } else {
         this->epochs_without_improve++;
     }
@@ -177,17 +183,17 @@ bool Population::itrain(){
     // 4º Realizando os Crossovers
     // 5º Realizando as Mutações
 
-    // Caso não esteja mais evoluindo nada, mata geral
-    //if(this->epochs_without_improve > 500){
-    //    for(int i = 0; i < this->size(); i++)
-            // pop.ind[i] = Individual(configurations, pop.genes_range, pop.genes_precision);
-    // }
-    // @TODO: Precisa trazer as configurações 
+    // Se a variância de genes for muito baixa, não aplica a multiply pois ela prejudica
+    // a geração de individuos diferentes
+    /*if(this->std_score < 3500){
+        this->mutation_multiply = 1.0;
+        this->epochs_without_improve = 0;
 
-    // Atualiza o mulltiply da mutação
-    if(this->epochs_without_improve > 10){
-        int exp = std::min(6, (this->epochs_without_improve-5)/5);
-        this->mutation_multiply = std::pow(10, exp);
+    // Caso contrário calcula quanto deve ser a multiplicação caso não haja evolução
+    // durante muitas gerações
+    } else*/ if(this->epochs_without_improve > 5){
+        int exp = std::min(8, (this->epochs_without_improve)/5);
+        this->mutation_multiply = std::pow(0.1, exp);
         printf("Mutation Multiply: %d\n", exp);
     }
 

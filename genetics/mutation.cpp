@@ -9,9 +9,12 @@
     void mutate_all(Population *pop){
         if(pop == NULL || pop->size() < 1) 
             return;
+        
+        bool apply_multiply = (pop->std_score > 3000);
 
         for(int i = 1; i < pop->size(); i++){
-            mut_all_layers(pop->ind[i], pop->mutation_rate, pop->mutation_range, pop->mutation_multiply, pop->genes_precision);
+            mut_all_layers(pop->ind[i], pop->mutation_rate, pop->mutation_range,
+                pop->genes_precision, pop->mutation_multiply, apply_multiply);
         }
     }
 
@@ -19,16 +22,19 @@
         if(pop == NULL || pop->size() < 1) 
             return;
 
+        bool apply_multiply = (pop->std_score > 3000);
+        
         for(int i = 1; i < pop->size(); i++){
             if(rand()&100 < prob)
-                mut_all_layers(pop->ind[i], pop->mutation_rate, pop->mutation_range, pop->mutation_multiply, pop->genes_precision);
+                mut_all_layers(pop->ind[i], pop->mutation_rate, pop->mutation_range,
+                    pop->genes_precision, pop->mutation_multiply, apply_multiply);
         }
     }
 
 /**
  * Mutations
  */
-    void mut_all_layers(Individual &ind, int rate, int range, int multiply, int precision){
+    void mut_all_layers(Individual &ind, int rate, int range, int precision, double multiply, bool apply_multiply){
         for(int layer = 0; layer < ind.weights.size(); layer++){
             for(int i = 0; i < ind.weights[layer].rows; i++ ){
                 for(int j = 0; j < ind.weights[layer].cols; j++ ){
@@ -36,14 +42,18 @@
                     if( rand()%100 > rate) 
                         continue;
 
-                    ind.weights[layer].values[i][j] += random_genef(range, precision * multiply);
-                    // ind.weights[layer].values[i][j] += random_genef(range, precision);
+                    // Obs: Aplicar multiply excessivamente pode acarretar na perda de variância dos genes
+                    if(apply_multiply)
+                        ind.weights[layer].values[i][j] += random_genef(range, precision) * multiply;
+                    else
+                        ind.weights[layer].values[i][j] += random_genef(range, precision);
+                    
                 }
             }
         }
     }
 
-    void mut_one_layer(Individual &ind, int rate, int range, int multiply, int precision){
+    void mut_one_layer(Individual &ind, int rate, int range, int precision, double multiply){
         int layer = rand()%ind.size();
         for(int i = 0; i < ind.weights[layer].rows; i++ ){
             for(int j = 0; j < ind.weights[layer].cols; j++ ){  

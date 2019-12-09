@@ -19,7 +19,7 @@
 /**
  * Configurações do jogo
  */
-    const int  TAMANHO_POPULACAO = 150;
+    const int  TAMANHO_POPULACAO = 100;
     const bool AUTO_UPGRADE      = false;
     const int  INSTANCE_TYPE     = INST_TYPE_ALL_POSIX;
     // const bool AUTO_UPGRADE      = true;
@@ -53,7 +53,7 @@ int main(){
     
     Population pop = Population(TAMANHO_POPULACAO);
     pop.genes_range       = 1;
-    pop.mutation_rate     = 40;
+    pop.mutation_rate     = 10;
     pop.mutation_range    = 1;
     pop.mutation_multiply = 1;
     pop.genes_precision   = 100; 
@@ -156,6 +156,12 @@ int main(){
             }
         }
 
+        // Caso faça muito tempo que não haja melhoria mata todos
+        if(pop.epochs_without_improve > 1000 && pop.best_ind.score != 0){
+            changeRequestedFlag = true;
+            buttonPressed       = 'k';
+        }
+
         // Realizando as mudanças estabelecidas pelo teclado
         if(allRoundsFinished && changeRequestedFlag){
             switch(buttonPressed){
@@ -192,8 +198,9 @@ int main(){
                 case 'k':
                     printf("GENOCIDIO DA POPULAÇÃO");
                     pop.enviroment_changed = true;
-                    for(int i = 1; i < pop.size(); i++)
+                    for(int i = 0; i < pop.size(); i++)
                         pop.ind[i] = Individual(configurations, pop.genes_range, pop.genes_precision);
+                    pop.epoch = 0;
                     break;
             }
             changeRequestedFlag = false; 
@@ -205,6 +212,8 @@ int main(){
         framesCounter++;
         // SDL_Delay(10);
     }
+
+    printf("\n\nFIM DO TREINO, MELHOR INDIVIDUO NASCEU NA GERAÇÃO %d\n\n", pop.best_ind_epoch);
 
     // Desalocando as variáveis e destruindo as estruturas
     SDL_DestroyRenderer( gRenderer );

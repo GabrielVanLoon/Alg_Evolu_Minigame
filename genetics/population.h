@@ -36,6 +36,7 @@
             int mutation_rate;
             int mutation_range;
             double mutation_multiply;
+            double mutation_divider;
             int genes_precision;
 
             /**

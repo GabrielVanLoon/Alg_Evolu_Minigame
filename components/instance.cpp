@@ -27,6 +27,7 @@ double random_double(int range, int precision){
 
 int get_dist_manhattan(const Projectile &p, const Enemy &e){
     return abs(p.pos_x-e.pos_x) + abs(p.pos_y-e.pos_y);
+    // return abs( p.pos_x - (e.pos_x+(e.width/2)) ) + abs( p.pos_y - (e.pos_y+(e.height/2)) );
 }
 
 Instance::Instance(){
