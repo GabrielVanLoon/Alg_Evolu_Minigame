@@ -149,8 +149,8 @@ bool Population::itrain(){
 
     // Trick: Para evitar demora na busca de lugares ótimos, os 3 piores serão uma cópia do best
     this->ind[this->size()-1] = this->ind[0];
-    this->ind[this->size()-2] = this->ind[0];
-    // this->ind[this->size()-3] = this->ind[0];
+    //this->ind[this->size()-2] = this->ind[0];
+    //this->ind[this->size()-3] = this->ind[0];
 
     // 3º Calcular performance e dados gerais da geração e exibindo na tela
     this->avg_score = 0;
@@ -175,10 +175,28 @@ bool Population::itrain(){
         this->enviroment_changed     = false;
         this->epochs_without_improve = 0;
         this->mutation_multiply      = 1.0;
-        this->mutation_divider      = 1.0;
+        this->mutation_divider       = 1.0;
     } else {
         this->epochs_without_improve++;
     }
+
+    // Atualizando mutation rate caso não haja melhoria durante muitas epocas
+    if( this->epochs_without_improve > 70){
+        int old_rate = this->mutation_rate;
+        if(this->mutation_rate > 10)     this->mutation_rate = 10;
+        else if(this->mutation_rate > 5) this->mutation_rate = 5;
+        else if(this->mutation_rate > 2 && this->best_ind.score < 300) this->mutation_rate = 2;
+        
+        // Se houve mudança reinicia o contador de epochs without improve
+        if(old_rate != this->mutation_rate) 
+            this->epochs_without_improve = 0;
+    }
+
+    // Atualizando o desvio mínimo dos individuos baseado no melhor score atual
+    if (this->best_ind.score > 500)
+         this->std_min = 2500;
+    else
+        this->std_min = 500;
 
     // 4º Realizando os Crossovers
     // 5º Realizando as Mutações
@@ -187,32 +205,26 @@ bool Population::itrain(){
     // a geração de individuos diferentes
     int exp = 0;
     if(this->epochs_without_improve > 10){
-        exp = std::min(4, (this->epochs_without_improve)/10);
+        int max_exp = 4;
+        //max_exp = (this->best_ind.score < 700) ? 6 : max_exp;
+        //max_exp = (this->best_ind.score < 300) ? 10 : max_exp;
+
+        exp = std::min(max_exp , (this->epochs_without_improve)/10);
         this->mutation_multiply = std::pow(0.1, exp);
     }
 
     // Verifica se não faz muito tempo que o melhor individuo é melhorado
     if( this->epochs_without_improve > 100){
-        //int temp = this->mutation_rate;
-        this->mutation_rate = 2;
+        // cross_tournament_selection(this);
         cross_best_vs_all(this);
         mutate_one(this);
-        //this->mutation_rate = temp;
-    
-    } else if( this->epochs_without_improve > 60){
-        //int temp = this->mutation_rate;
-        this->mutation_rate = 5;
-        cross_best_vs_all(this);
-        mutate_all(this);
-        //this->mutation_rate = temp;
-    
     } else {
         cross_best_vs_all(this);
         mutate_all(this);
     }
     
     // Print CSV com Best e média
-    printf("Mutation Multiply: %d\tEpochs Without Improve: %d\n", exp, this->epochs_without_improve);
+    printf("Rate: %02d\tMutation Multiply: %d\tEpochs Without Improve: %d\n", this->mutation_rate, exp, this->epochs_without_improve);
     printf("\n");
 
     return true;

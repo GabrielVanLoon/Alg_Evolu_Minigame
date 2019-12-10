@@ -21,6 +21,7 @@
             int epochs_without_improve;
             unsigned long avg_score; 
             unsigned long std_score;
+            unsigned long std_min;
             bool enviroment_changed;
 
             /**

@@ -10,7 +10,7 @@
         if(pop == NULL || pop->size() < 1) 
             return;
         
-        bool apply_multiply = (pop->std_score > 3000);
+        bool apply_multiply = (pop->std_score > pop->std_min);
 
         for(int i = 1; i < pop->size(); i++){
             mut_all_layers(pop->ind[i], pop->mutation_rate, pop->mutation_range,
@@ -22,7 +22,7 @@
         if(pop == NULL || pop->size() < 1) 
             return;
         
-        bool apply_multiply = (pop->std_score > 3000);
+        bool apply_multiply = (pop->std_score > pop->std_min);
 
         for(int i = 1; i < pop->size(); i++){
             mut_one_layer(pop->ind[i], pop->mutation_rate, pop->mutation_range,
@@ -34,7 +34,7 @@
         if(pop == NULL || pop->size() < 1) 
             return;
 
-        bool apply_multiply = (pop->std_score > 3000);
+        bool apply_multiply = (pop->std_score > pop->std_min);
         
         for(int i = 1; i < pop->size(); i++){
             if(rand()&100 < prob)
@@ -67,15 +67,11 @@
 
     void mut_one_layer(Individual &ind, int rate, int range, int precision, double multiply, bool apply_multiply){
         int layer = rand()%ind.size();
-        for(int i = 0; i < ind.weights[layer].rows; i++ ){
-            for(int j = 0; j < ind.weights[layer].cols; j++ ){  
-                if( rand()%100 > rate) 
-                    continue;
-
-                if(apply_multiply)
-                    ind.weights[layer].values[i][j] += random_genef(range, precision) * multiply;
-                else
-                    ind.weights[layer].values[i][j] += random_genef(range, precision);
-            }
-        }
+        int i     = rand()%ind.weights[layer].rows;
+        int j     = rand()%ind.weights[layer].cols;
+        
+        if(apply_multiply)
+            ind.weights[layer].values[i][j] += random_genef(range, precision) * multiply;
+        else
+            ind.weights[layer].values[i][j] += random_genef(range, precision);   
     }

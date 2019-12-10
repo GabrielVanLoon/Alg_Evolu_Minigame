@@ -19,9 +19,10 @@
 /**
  * Configurações do jogo
  */
-    const int  TAMANHO_POPULACAO = 100;
-    const bool AUTO_UPGRADE      = false;
-    const int  INSTANCE_TYPE     = INST_TYPE_ALL_POSIX;
+    const int  TAMANHO_POPULACAO  = 100;
+    const bool AUTO_UPGRADE       = false;
+    const int  INIT_MUTATION_RATE = 10;
+    const int  INSTANCE_TYPE      = INST_TYPE_ALL_POSIX;
     // const bool AUTO_UPGRADE      = true;
     // const int  INSTANCE_TYPE     = INST_TYPE_FLAG_CONTROL;
 
@@ -53,7 +54,7 @@ int main(){
     
     Population pop = Population(TAMANHO_POPULACAO);
     pop.genes_range       = 1;
-    pop.mutation_rate     = 10;
+    pop.mutation_rate     = INIT_MUTATION_RATE;
     pop.mutation_range    = 1;
     pop.mutation_multiply = 1;
     pop.genes_precision   = 100; 
@@ -157,10 +158,11 @@ int main(){
         }
 
         // Caso faça muito tempo que não haja melhoria mata todos
-        if(pop.epochs_without_improve > 250 && pop.best_ind.score > 40){
+        if( (pop.epochs_without_improve > 150 && pop.best_ind.score > 300) 
+                || pop.epochs_without_improve > 300 ){
             changeRequestedFlag = true;
             buttonPressed       = 'k';
-        }
+        } 
 
         // Realizando as mudanças estabelecidas pelo teclado
         if(allRoundsFinished && changeRequestedFlag){
@@ -198,6 +200,7 @@ int main(){
                 case 'k':
                     printf("GENOCIDIO DA POPULAÇÃO");
                     pop.enviroment_changed = true;
+                    pop.mutation_rate      = INIT_MUTATION_RATE;
                     for(int i = 0; i < pop.size(); i++)
                         pop.ind[i] = Individual(configurations, pop.genes_range, pop.genes_precision);
                     pop.epoch = 0;
