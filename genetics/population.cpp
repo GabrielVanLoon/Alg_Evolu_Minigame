@@ -148,8 +148,8 @@ bool Population::itrain(){
     std::sort(this->ind.begin(), this->ind.end(), compare_individuals_desc);
 
     // Trick: Para evitar demora na busca de lugares ótimos, os 3 piores serão uma cópia do best
-    // this->ind[this->size()-1] = this->ind[0];
-    // this->ind[this->size()-2] = this->ind[0];
+    this->ind[this->size()-1] = this->ind[0];
+    this->ind[this->size()-2] = this->ind[0];
     // this->ind[this->size()-3] = this->ind[0];
 
     // 3º Calcular performance e dados gerais da geração e exibindo na tela
@@ -185,34 +185,34 @@ bool Population::itrain(){
 
     // Se a variância de genes for muito baixa, não aplica a multiply pois ela prejudica
     // a geração de individuos diferentes
-    /*if(this->std_score < 3500){
-        this->mutation_multiply = 1.0;
-        this->epochs_without_improve = 0;
-
-    // Caso contrário calcula quanto deve ser a multiplicação caso não haja evolução
-    // durante muitas gerações
-    } else*/ if(this->epochs_without_improve > 5){
-        int exp = std::min(8, (this->epochs_without_improve)/5);
+    int exp = 0;
+    if(this->epochs_without_improve > 10){
+        exp = std::min(4, (this->epochs_without_improve)/10);
         this->mutation_multiply = std::pow(0.1, exp);
-        printf("Mutation Multiply: %d\n", exp);
     }
 
     // Verifica se não faz muito tempo que o melhor individuo é melhorado
-    if(this->epochs_without_improve  > 100){
-        // cross_tournament_selection(this);
+    if( this->epochs_without_improve > 100){
+        //int temp = this->mutation_rate;
+        this->mutation_rate = 2;
+        cross_best_vs_all(this);
+        mutate_one(this);
+        //this->mutation_rate = temp;
+    
+    } else if( this->epochs_without_improve > 60){
+        //int temp = this->mutation_rate;
+        this->mutation_rate = 5;
         cross_best_vs_all(this);
         mutate_all(this);
-    } else if( this->epochs_without_improve > 20){
-        //this->mutation_multiply = pow(10, this->epochs_without_improve%3);
-        // cross_tournament_selection(this);
-        cross_best_vs_all(this);
-        mutate_all(this);
+        //this->mutation_rate = temp;
+    
     } else {
         cross_best_vs_all(this);
         mutate_all(this);
     }
     
     // Print CSV com Best e média
+    printf("Mutation Multiply: %d\tEpochs Without Improve: %d\n", exp, this->epochs_without_improve);
     printf("\n");
 
     return true;

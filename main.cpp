@@ -157,7 +157,7 @@ int main(){
         }
 
         // Caso faça muito tempo que não haja melhoria mata todos
-        if(pop.epochs_without_improve > 1000 && pop.best_ind.score != 0){
+        if(pop.epochs_without_improve > 250 && pop.best_ind.score > 40){
             changeRequestedFlag = true;
             buttonPressed       = 'k';
         }

@@ -16,6 +16,13 @@
         void mutate_all(Population *pop);
 
         /**
+         * void mutate_one(Population *pop);
+         * Realiza o algoritmo de mutação em TODOS os individuos da geração com
+         * exceção do melhor de todos. Porém só realiza a mutação em um único genes
+         */
+        void mutate_one(Population *pop);
+
+        /**
          * void mutate_all(Population *pop);
          * Percorre todos os individuos e possui uma chance aleatória de realizar
          * ou não a mutação em cada um dos individuos.
@@ -38,6 +45,6 @@
          * Para cada peso, possui uma chance aleatória de modificar o valor
          * no intervalo [-range*multiply,+-range*multiply].
          */
-        void mut_one_layer(Individual &ind, int rate, int range, int precision, double multiply);
+        void mut_one_layer(Individual &ind, int rate, int range, int precision, double multiply, bool apply_multiply);
 
 #endif

@@ -18,6 +18,18 @@
         }
     }
 
+    void mutate_one(Population *pop){
+        if(pop == NULL || pop->size() < 1) 
+            return;
+        
+        bool apply_multiply = (pop->std_score > 3000);
+
+        for(int i = 1; i < pop->size(); i++){
+            mut_one_layer(pop->ind[i], pop->mutation_rate, pop->mutation_range,
+                pop->genes_precision, pop->mutation_multiply, apply_multiply);
+        }
+    }
+
     void mutate_prob(Population *pop, int prob){
         if(pop == NULL || pop->size() < 1) 
             return;
@@ -53,15 +65,17 @@
         }
     }
 
-    void mut_one_layer(Individual &ind, int rate, int range, int precision, double multiply){
+    void mut_one_layer(Individual &ind, int rate, int range, int precision, double multiply, bool apply_multiply){
         int layer = rand()%ind.size();
         for(int i = 0; i < ind.weights[layer].rows; i++ ){
             for(int j = 0; j < ind.weights[layer].cols; j++ ){  
                 if( rand()%100 > rate) 
                     continue;
 
-                ind.weights[layer].values[i][j] += random_genef(range, precision * multiply);
-                // ind.weights[layer].values[i][j] += random_genef(range, precision);
+                if(apply_multiply)
+                    ind.weights[layer].values[i][j] += random_genef(range, precision) * multiply;
+                else
+                    ind.weights[layer].values[i][j] += random_genef(range, precision);
             }
         }
     }
